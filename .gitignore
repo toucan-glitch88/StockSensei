@@ -1,0 +1,6 @@
+backend/data/
+backend/models/
+__pycache__/
+*.pkl
+*.csv
+.ipynb_checkpoints/
