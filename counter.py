@@ -1,3 +1,4 @@
-for loop in range(1,6):
-    print(loop)
-    
+print("Prediction Horizon: 1 Day selected")
+print("Prediction Horizon: 1 Week selected")
+print("Prediction Horizon: 1 Month selected")
+print("Prediction Horizon: 3 Months selected")
