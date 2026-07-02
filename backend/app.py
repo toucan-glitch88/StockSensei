@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import pandas as pd
 import joblib
 
 app = Flask(__name__)
+CORS(app)
 
 # Load saved model, features, and dataset
 model = joblib.load("backend/models/stock_direction_model.pkl")
