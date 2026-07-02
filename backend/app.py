@@ -23,7 +23,7 @@ def home():
 def predict(ticker):
     ticker = ticker.upper()
 
-    # Get data for the selected stock
+    # Get data for selected stock
     stock = df[df["Ticker"] == ticker].copy()
 
     if stock.empty:
@@ -31,11 +31,11 @@ def predict(ticker):
             "error": "Ticker not found"
         }), 404
 
-    # Sort data by date
+    # Sort by date
     stock["Date"] = pd.to_datetime(stock["Date"])
     stock = stock.sort_values("Date")
 
-    # Create the same features used during model training
+    # Create features
     stock["Daily_Return"] = stock["Close"].pct_change()
     stock["MA_5"] = stock["Close"].rolling(5).mean()
     stock["MA_10"] = stock["Close"].rolling(10).mean()
@@ -49,9 +49,17 @@ def predict(ticker):
             "error": "Not enough data for this ticker"
         }), 400
 
-    # Get latest row for prediction
+    # Latest row
+    latest_row = stock.iloc[-1]
     latest_data = stock[features].iloc[[-1]]
 
+    latest_date = latest_row["Date"].strftime("%Y-%m-%d")
+    current_price = round(float(latest_row["Close"]), 2)
+    daily_return = round(float(latest_row["Daily_Return"] * 100), 2)
+    ma_5 = round(float(latest_row["MA_5"]), 2)
+    ma_10 = round(float(latest_row["MA_10"]), 2)
+
+    # Prediction
     prediction = model.predict(latest_data)[0]
     confidence = model.predict_proba(latest_data)[0].max()
 
@@ -72,6 +80,11 @@ def predict(ticker):
 
     return jsonify({
         "ticker": ticker,
+        "latest_date": latest_date,
+        "current_price": current_price,
+        "daily_return_percent": daily_return,
+        "moving_average_5": ma_5,
+        "moving_average_10": ma_10,
         "prediction": result,
         "confidence": round(confidence * 100, 2),
         "risk_level": risk_level,
@@ -94,4 +107,4 @@ def predict(ticker):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
