@@ -1,0 +1,819 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Sensei — Predict</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0f2a4a;
+    --blue:#3b6fd4;
+    --purple:#8b5cf6;
+    --purple-fill:rgba(139,92,246,0.18);
+    --bg:#eef1fb;
+    --card:#ffffff;
+    --panel:#e7ebf5;
+    --green:#1f9d55;
+    --green-bg:#e5f7ec;
+    --red:#d0453c;
+    --red-bg:#fbe9e8;
+    --text:#1b2333;
+    --muted:#6b7488;
+    --border:#e2e6f2;
+    --yellow-bg:#fdf6d8;
+    --yellow-border:#f0dd8a;
+    --amber:#b8860b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 40px;
+    background:linear-gradient(90deg,#7f9ac9,#a9b8d9);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:18px;
+    color:var(--navy);
+    letter-spacing:0.5px;
+  }
+  .logo-icon{
+    width:34px;height:34px;
+    background:var(--navy);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    font-size:16px;
+  }
+  nav{display:flex; gap:32px;}
+  nav button{
+    background:none; border:none;
+    font-size:15px; font-weight:600;
+    color:var(--navy); cursor:pointer;
+    padding:6px 4px;
+    border-bottom:2px solid transparent;
+    transition:border-color .15s ease;
+  }
+  nav button:hover{border-bottom-color:var(--navy);}
+  .avatar{width:36px;height:36px;border-radius:50%;background:#4a4a4a;}
+
+  main{
+    max-width:1400px;
+    margin:0 auto;
+    padding:28px 32px 40px;
+  }
+
+  .top-grid{
+    display:grid;
+    grid-template-columns:400px 1fr;
+    gap:24px;
+    align-items:start;
+  }
+
+  /* Left column */
+  .left-col{
+    background:var(--panel);
+    border-radius:22px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .ticker-search{
+    display:flex;
+    gap:8px;
+  }
+  .ticker-search input{
+    flex:1;
+    padding:12px 16px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#fff;
+    font-size:14px;
+    outline:none;
+  }
+  .ticker-search input:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(59,111,212,0.15);
+  }
+  .ticker-search button{
+    padding:12px 20px;
+    border-radius:12px;
+    border:none;
+    background:var(--navy);
+    color:#fff;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition:opacity .12s ease;
+  }
+  .ticker-search button:hover{opacity:0.9;}
+  .ticker-card{
+    background:var(--card);
+    border-radius:18px;
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .ticker-left{display:flex; align-items:center; gap:12px;}
+  .apple-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:#f3f3f3;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+  }
+  .ticker-left .name{font-weight:800; font-size:19px;}
+  .ticker-left .symbol{font-size:13px; color:var(--muted);}
+  .ticker-right{text-align:right;}
+  .ticker-right .price{font-weight:800; font-size:26px;}
+  .badges{display:flex; gap:6px; margin-top:6px; justify-content:flex-end;}
+  .badge{
+    font-size:12px; font-weight:700;
+    padding:3px 10px; border-radius:20px;
+    background:var(--green-bg); color:var(--green);
+  }
+  .badge.down{background:var(--red-bg); color:var(--red);}
+
+  .predict-panel{
+    background:var(--card);
+    border-radius:18px;
+    padding:24px;
+    border:2px solid #dfe3ef;
+  }
+  .predicted-change{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .predicted-change .arrow{
+    font-size:28px; color:var(--green); font-weight:800;
+  }
+  .predicted-change .amount{
+    font-size:26px; font-weight:800; color:var(--green);
+  }
+  .predicted-change.down .amount{color:var(--red);}
+  .predicted-change .info-icon{
+    margin-left:auto;
+    color:var(--muted);
+    cursor:pointer;
+    font-size:15px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    width:22px;height:22px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .predicted-label{
+    font-size:14px; color:var(--muted); margin-bottom:20px;
+  }
+
+  .stats-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    background:#f6f7fb;
+    border-radius:14px;
+    padding:16px 8px;
+    margin-bottom:16px;
+  }
+  .stat{text-align:center;}
+  .stat .val{font-weight:800; font-size:16px;}
+  .stat .val.red{color:var(--red);}
+  .stat .val.green{color:var(--green);}
+  .stat .lbl{font-size:12px; color:var(--muted); margin-top:2px;}
+  .stat-divider{width:1px; background:var(--border);}
+
+  .risk-alert{
+    display:flex; align-items:center; gap:10px;
+    background:var(--yellow-bg);
+    border:1px solid var(--yellow-border);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:14px;
+    font-weight:600;
+    color:#8a6d1f;
+    margin-bottom:20px;
+  }
+
+  .confidence-title{
+    display:flex; align-items:center; gap:6px;
+    font-weight:700; font-size:14px; margin-bottom:14px;
+  }
+  .confidence-title .info-icon{
+    color:var(--muted); font-size:13px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    width:18px;height:18px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .confidence-slider{
+    position:relative;
+    height:6px;
+    border-radius:3px;
+    background:linear-gradient(90deg, var(--red), #f0d060, var(--green));
+    margin:10px 4px 8px;
+  }
+  .confidence-slider .dot{
+    position:absolute; top:50%;
+    width:14px;height:14px;
+    border-radius:50%;
+    border:3px solid #fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.1);
+    transform:translate(-50%,-50%);
+  }
+  .confidence-slider .dot.low{background:var(--red); left:0%;}
+  .confidence-slider .dot.high{background:var(--green); left:100%;}
+  .confidence-labels{
+    display:flex; justify-content:space-between;
+    font-size:13px; font-weight:700;
+  }
+  .confidence-labels .low{color:var(--red);}
+  .confidence-labels .high{color:var(--green);}
+
+  /* Right column - chart */
+  .chart-card{
+    background:var(--card);
+    border-radius:22px;
+    padding:24px;
+  }
+  .chart-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .range-buttons{display:flex; gap:6px; flex-wrap:wrap;}
+  .range-buttons button{
+    border:1px solid var(--border);
+    background:#f6f7fb;
+    color:var(--muted);
+    font-size:13px; font-weight:600;
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .12s ease, color .12s ease;
+  }
+  .range-buttons button:hover{background:#eef0f9;}
+  .range-buttons button.active{
+    background:var(--navy); color:#fff; border-color:var(--navy);
+  }
+  .date-range{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--border);
+    background:#f6f7fb;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:13px;
+    color:var(--text);
+  }
+
+  .section-labels{
+    display:flex;
+    justify-content:space-between;
+    padding:0 4%;
+    margin-bottom:6px;
+  }
+  .section-labels span{font-size:13px; font-weight:700;}
+  .section-labels .past{color:var(--navy);}
+  .section-labels .pred{color:var(--purple);}
+
+  .chart-wrap{position:relative; height:380px;}
+
+  .chart-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:28px;
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+  }
+  .legend-item{display:flex; gap:10px; align-items:flex-start; font-size:13px;}
+  .legend-swatch{width:22px; height:3px; margin-top:7px; border-radius:2px; flex-shrink:0;}
+  .legend-swatch.solid{background:var(--green);}
+  .legend-swatch.dashed{
+    background:repeating-linear-gradient(90deg, var(--purple) 0 6px, transparent 6px 10px);
+  }
+  .legend-item b{display:block; font-size:13px;}
+  .legend-item .sub{color:var(--muted); font-size:12px;}
+  .legend-icon{font-size:15px; margin-top:2px;}
+
+  /* Bottom risk banner */
+  .risk-banner{
+    margin-top:24px;
+    background:var(--yellow-bg);
+    border:2px solid var(--blue);
+    border-radius:18px;
+    padding:24px 28px;
+    display:flex;
+    gap:24px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .risk-banner .shield{
+    font-size:40px; color:var(--amber);
+  }
+  .risk-banner .risk-main{flex:1; min-width:260px;}
+  .risk-banner h2{
+    margin:0 0 6px; font-size:22px;
+  }
+  .risk-banner h2 span{color:var(--amber);}
+  .risk-banner p{margin:0; color:var(--muted); font-size:14px;}
+  .risk-factors{
+    background:#fff;
+    border-radius:14px;
+    padding:16px 20px;
+    min-width:240px;
+    position:relative;
+  }
+  .risk-factors b{font-size:14px;}
+  .risk-factors ul{
+    margin:8px 0 0; padding-left:18px; font-size:13px; color:var(--text);
+  }
+  .risk-factors ul li{margin-bottom:4px;}
+  .risk-factors .info-icon{
+    position:absolute; top:14px; right:14px;
+    color:var(--muted); font-size:13px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    width:18px;height:18px;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  @media (max-width:1000px){
+    .top-grid{grid-template-columns:1fr;}
+    header{padding:14px 20px; flex-wrap:wrap; gap:10px;}
+    nav{gap:16px; flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🧢</div>
+    STOCK SENSEI
+  </div>
+  <nav>
+    <button onclick="sendPrompt('Go to Home')">Home</button>
+    <button onclick="sendPrompt('Go to Predict')">Predict</button>
+    <button onclick="sendPrompt('Go to Learn')">Learn</button>
+    <button onclick="sendPrompt('Go to Watchlist')">Watchlist</button>
+    <button onclick="sendPrompt('Go to Explore')">Explore</button>
+    <button onclick="sendPrompt('Go to About Us')">About Us</button>
+  </nav>
+  <div class="avatar"></div>
+</header>
+
+<main>
+  <div class="top-grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+      <div class="ticker-search">
+        <input type="text" id="ticker-input" placeholder="Search a ticker (e.g. AAPL, MSFT, TSLA)" />
+        <button id="ticker-go">Go</button>
+      </div>
+
+      <div class="ticker-card">
+        <div class="ticker-left">
+          <div class="apple-icon" id="company-icon">📈</div>
+          <div>
+            <div class="name" id="company-name">Company Name</div>
+            <div class="symbol" id="company-symbol">TICK</div>
+          </div>
+        </div>
+        <div class="ticker-right">
+          <div class="price" id="current-price">$0.00</div>
+          <div class="badges">
+            <span class="badge" id="badge-week">+0.0%</span>
+            <span class="badge" id="badge-today">+0.0% Today</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="predict-panel">
+        <div class="predicted-change" id="predicted-change">
+          <span class="arrow" id="predicted-arrow">↑</span>
+          <span class="amount" id="predicted-amount">+ $7.26 (+2.4%)</span>
+          <span class="info-icon" title="Model's expected price movement over the prediction horizon">i</span>
+        </div>
+        <div class="predicted-label">Predicted Change (Next 5 Days)</div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="val red" id="stat-downside">-$8.72 (-2.9%)</div>
+            <div class="lbl">Downside</div>
+          </div>
+          <div class="stat">
+            <div class="val" id="stat-current">$300.67</div>
+            <div class="lbl">Current Price</div>
+          </div>
+          <div class="stat">
+            <div class="val green" id="stat-upside">-$15.33 (+5.1%)</div>
+            <div class="lbl">Upside</div>
+          </div>
+        </div>
+
+        <div class="risk-alert">
+          <span>⚠️</span>
+          <span id="volatility-text">77% risk of volatility in selected period</span>
+        </div>
+
+        <div class="confidence-title">
+          95% Confidence Range (Next 5 Days)
+          <span class="info-icon" title="Range within which the price is expected to fall with 95% confidence">i</span>
+        </div>
+        <div class="confidence-slider">
+          <div class="dot low"></div>
+          <div class="dot high"></div>
+        </div>
+        <div class="confidence-labels">
+          <span class="low" id="conf-low">$291.95 (-2.9%)</span>
+          <span class="high" id="conf-high">$316.00 (+5.1%)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="chart-card">
+      <div class="chart-controls">
+        <div class="range-buttons" id="range-buttons">
+          <button data-range="1D">1D</button>
+          <button data-range="5D">5D</button>
+          <button data-range="1M" class="active">1M</button>
+          <button data-range="6M">6M</button>
+          <button data-range="YTD">YTD</button>
+          <button data-range="1Y">1Y</button>
+          <button data-range="5Y">5Y</button>
+          <button data-range="MAX">MAX</button>
+        </div>
+        <div class="date-range">📅 <span id="date-range-label">Apr 1, 2025 – Apr 24, 2025</span> ▾</div>
+      </div>
+
+      <div class="section-labels">
+        <span class="past">Past (Historical)</span>
+        <span class="pred">Prediction (Next 5 Days)</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="predictChart"></canvas>
+      </div>
+
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-swatch solid"></span>
+          <span>
+            <b>Historical Data</b>
+            <span class="sub" id="legend-hist-range">Apr 1 – Apr 22, 2025 (22 days)</span>
+          </span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch dashed"></span>
+          <span>
+            <b>Prediction</b>
+            <span class="sub" id="legend-pred-range">Next 5 Days · Apr 23 – Apr 29, 2025</span>
+          </span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-icon">📅</span>
+          <span>
+            <b>Prediction Horizon</b>
+            <span class="sub">5 Days Forward</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM RISK BANNER -->
+  <div class="risk-banner">
+    <div class="shield">🛡️</div>
+    <div class="risk-main">
+      <h2>Estimated Risk: <span id="risk-level">High</span></h2>
+      <p>Based on market volatility and prediction uncertainty.</p>
+    </div>
+    <div class="risk-factors">
+      <span class="info-icon" title="Factors contributing to the risk estimate">i</span>
+      <b>Risk factors include:</b>
+      <ul>
+        <li>Market volatility</li>
+        <li>Recent price fluctuations</li>
+        <li>External market conditions</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ---------------------------------------------------------
+   Data generation: historical series + a 5-day forward
+   prediction with a widening confidence band.
+   Swap generateHistorical()/generatePrediction() for real
+   API calls to your backend / model when ready.
+--------------------------------------------------------- */
+
+function seededRand(seed){
+  let s = seed;
+  return function(){
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
+// Ticker -> seed number, so each symbol gets a consistent but distinct
+// simulated price series. Unrecognized tickers still work fine — they
+// just get a seed derived from their character codes.
+function seedFromTicker(ticker){
+  let seed = 0;
+  for(let i=0;i<ticker.length;i++) seed += ticker.charCodeAt(i) * (i+7);
+  return seed || 17;
+}
+
+// Small lookup for nicer display info on common tickers. Anything not
+// in here just falls back to showing the ticker itself as the name —
+// swap this whole object for a real company-lookup API call.
+const COMPANY_INFO = {
+  AAPL:  {name:'Apple Inc.',        icon:'🍎'},
+  MSFT:  {name:'Microsoft Corp.',   icon:'🪟'},
+  TSLA:  {name:'Tesla, Inc.',       icon:'⚡'},
+  GOOGL: {name:'Alphabet Inc.',     icon:'🔍'},
+  AMZN:  {name:'Amazon.com, Inc.',  icon:'📦'},
+  NVDA:  {name:'NVIDIA Corp.',      icon:'🎮'},
+  META:  {name:'Meta Platforms',    icon:'📘'},
+  NFLX:  {name:'Netflix, Inc.',     icon:'🎬'},
+};
+
+let currentTicker = 'AAPL';
+
+function getCompanyInfo(ticker){
+  return COMPANY_INFO[ticker] || {name: ticker, icon:'📈'};
+}
+
+// Derive a plausible starting price band from the ticker's seed so
+// different symbols don't all look the same. Replace with a real
+// quote lookup when wiring up your backend.
+function basePriceFor(ticker){
+  const rand = seededRand(seedFromTicker(ticker));
+  return 40 + rand()*260; // $40–$300 range
+}
+
+function generateHistorical(range, ticker){
+  const seed = seedFromTicker(ticker);
+  const startPrice = basePriceFor(ticker);
+  const configs = {
+    '1D': {points:24, step:'hour', vol:0.6},
+    '5D': {points:5,  step:'day',  vol:1.2},
+    '1M': {points:22, step:'day',  vol:1.8},
+    '6M': {points:26, step:'week', vol:5},
+    'YTD':{points:24, step:'week', vol:5},
+    '1Y': {points:52, step:'week', vol:6},
+    '5Y': {points:60, step:'month',vol:8},
+    'MAX':{points:80, step:'month',vol:10},
+  };
+  const cfg = configs[range] || configs['1M'];
+  const rand = seededRand(seed + range.length);
+  let price = Math.max(5, startPrice - startPrice*0.15); // dip a bit before trending to "today"
+  const data = [];
+  const labels = [];
+  const today = new Date();
+
+  for(let i=0;i<cfg.points;i++){
+    const drift = (startPrice*0.15) / cfg.points + 0.1; // gentle uptrend toward startPrice
+    const noise = (rand()-0.45) * cfg.vol;
+    price = Math.max(1, price + drift + noise);
+    data.push(Math.round(price*100)/100);
+
+    const d = new Date(today);
+    if(cfg.step==='hour') d.setHours(d.getHours() - (cfg.points-i));
+    if(cfg.step==='day')  d.setDate(d.getDate() - (cfg.points-i));
+    if(cfg.step==='week') d.setDate(d.getDate() - (cfg.points-i)*7);
+    if(cfg.step==='month')d.setMonth(d.getMonth() - (cfg.points-i));
+
+    if(cfg.step==='hour') labels.push(d.getHours()+':00');
+    else if(cfg.step==='month') labels.push(d.toLocaleDateString('en-US',{month:'short',year:'2-digit'}));
+    else labels.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+  }
+  return {labels, data};
+}
+
+function generatePrediction(lastPrice, ticker){
+  const rand = seededRand(seedFromTicker(ticker) + 88);
+  const days = 5;
+  const mid = [];
+  const upper = [];
+  const lower = [];
+  const labels = [];
+  const today = new Date();
+
+  let price = lastPrice;
+  for(let i=1;i<=days;i++){
+    const drift = (rand()-0.45) * (lastPrice*0.012); // small % drift, scales with price
+    price = price + drift;
+    const spread = lastPrice*0.01 + i*(lastPrice*0.007); // widening confidence band
+    mid.push(Math.round(price*100)/100);
+    upper.push(Math.round((price+spread)*100)/100);
+    lower.push(Math.round((price-spread)*100)/100);
+
+    const d = new Date(today);
+    d.setDate(d.getDate()+i);
+    labels.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+  }
+  return {labels, mid, upper, lower};
+}
+
+let chart;
+function renderAll(range){
+  const ticker = currentTicker;
+  const info = getCompanyInfo(ticker);
+  document.getElementById('company-name').textContent = info.name;
+  document.getElementById('company-symbol').textContent = ticker;
+  document.getElementById('company-icon').textContent = info.icon;
+
+  const hist = generateHistorical(range, ticker);
+  const lastPrice = hist.data[hist.data.length-1];
+  const pred = generatePrediction(lastPrice, ticker);
+
+  // ---- Update stat panel ----
+  const upsideVal = pred.upper[pred.upper.length-1];
+  const downsideVal = pred.lower[pred.lower.length-1];
+  const midVal = pred.mid[pred.mid.length-1];
+
+  const predDiff = midVal - lastPrice;
+  const predPct = (predDiff/lastPrice*100).toFixed(1);
+  const upsidePct = ((upsideVal-lastPrice)/lastPrice*100).toFixed(1);
+  const downsidePct = ((downsideVal-lastPrice)/lastPrice*100).toFixed(1);
+  const isUp = predDiff >= 0;
+
+  document.getElementById('current-price').textContent = '$'+lastPrice.toFixed(2);
+  document.getElementById('stat-current').textContent = '$'+lastPrice.toFixed(2);
+  document.getElementById('stat-downside').textContent =
+    `-$${Math.abs(lastPrice-downsideVal).toFixed(2)} (${downsidePct}%)`;
+  document.getElementById('stat-upside').textContent =
+    `+$${Math.abs(upsideVal-lastPrice).toFixed(2)} (+${upsidePct}%)`;
+
+  document.getElementById('predicted-amount').textContent =
+    `${isUp?'+':'-'} $${Math.abs(predDiff).toFixed(2)} (${isUp?'+':''}${predPct}%)`;
+  document.getElementById('predicted-arrow').textContent = isUp ? '↑' : '↓';
+  const changeBox = document.getElementById('predicted-change');
+  changeBox.className = 'predicted-change' + (isUp?'':' down');
+  document.getElementById('predicted-arrow').style.color = isUp ? '#1f9d55' : '#d0453c';
+
+  document.getElementById('conf-low').textContent = `$${downsideVal.toFixed(2)} (${downsidePct}%)`;
+  document.getElementById('conf-high').textContent = `$${upsideVal.toFixed(2)} (+${upsidePct}%)`;
+
+  const volatility = Math.min(95, Math.round(40 + Math.abs(upsidePct - downsidePct) * 3));
+  document.getElementById('volatility-text').textContent =
+    `${volatility}% risk of volatility in selected period`;
+  document.getElementById('risk-level').textContent =
+    volatility > 65 ? 'High' : volatility > 35 ? 'Moderate' : 'Low';
+
+  document.getElementById('legend-hist-range').textContent =
+    `${hist.labels[0]} – ${hist.labels[hist.labels.length-1]} (${hist.labels.length} pts)`;
+  document.getElementById('legend-pred-range').textContent =
+    `Next 5 Days · ${pred.labels[0]} – ${pred.labels[pred.labels.length-1]}`;
+  document.getElementById('date-range-label').textContent =
+    `${hist.labels[0]} – ${pred.labels[pred.labels.length-1]}`;
+
+  // ---- Build combined chart data ----
+  const allLabels = [...hist.labels, ...pred.labels];
+  const histSeries = [...hist.data, ...Array(pred.labels.length).fill(null)];
+
+  // prediction lines need to connect from the last historical point
+  const predMidSeries = Array(hist.data.length-1).fill(null)
+    .concat([lastPrice], pred.mid);
+  const predUpperSeries = Array(hist.data.length-1).fill(null)
+    .concat([lastPrice], pred.upper);
+  const predLowerSeries = Array(hist.data.length-1).fill(null)
+    .concat([lastPrice], pred.lower);
+
+  const ctx = document.getElementById('predictChart').getContext('2d');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: allLabels,
+      datasets:[
+        {
+          label:'Historical',
+          data: histSeries,
+          borderColor:'#1f9d55',
+          backgroundColor:'rgba(31,157,85,0.12)',
+          borderWidth:2.5,
+          pointRadius:0,
+          fill:true,
+          tension:0.3,
+          spanGaps:false,
+        },
+        {
+          label:'Confidence Upper',
+          data: predUpperSeries,
+          borderColor:'transparent',
+          backgroundColor:'rgba(139,92,246,0.18)',
+          pointRadius:0,
+          fill:'+1',
+          tension:0.3,
+          spanGaps:true,
+        },
+        {
+          label:'Confidence Lower',
+          data: predLowerSeries,
+          borderColor:'transparent',
+          backgroundColor:'rgba(139,92,246,0.18)',
+          pointRadius:0,
+          fill:false,
+          tension:0.3,
+          spanGaps:true,
+        },
+        {
+          label:'Prediction',
+          data: predMidSeries,
+          borderColor:'#8b5cf6',
+          borderWidth:2.5,
+          borderDash:[6,4],
+          pointRadius:(ctx)=>ctx.dataIndex===allLabels.length-1?5:0,
+          pointBackgroundColor:'#8b5cf6',
+          fill:false,
+          tension:0.3,
+          spanGaps:true,
+        },
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{intersect:false, mode:'index'},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#0f2a4a',
+          padding:10,
+          filter:(item)=> item.dataset.label==='Historical' || item.dataset.label==='Prediction',
+          callbacks:{
+            label:(item)=> `${item.dataset.label}: $${item.formattedValue}`
+          }
+        },
+        annotation:{}
+      },
+      scales:{
+        x:{
+          grid:{display:false},
+          ticks:{color:'#6b7488', font:{size:11}, maxTicksLimit:8}
+        },
+        y:{
+          position:'left',
+          grid:{color:'#f0f2f9'},
+          ticks:{color:'#6b7488', font:{size:11}, callback:v=>'$'+v}
+        }
+      }
+    }
+  });
+}
+
+document.getElementById('range-buttons').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('#range-buttons button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll(btn.dataset.range);
+});
+
+function getActiveRange(){
+  const active = document.querySelector('#range-buttons button.active');
+  return active ? active.dataset.range : '1M';
+}
+
+function setTicker(raw){
+  const ticker = raw.trim().toUpperCase();
+  if(!ticker) return;
+  currentTicker = ticker;
+  renderAll(getActiveRange());
+}
+
+document.getElementById('ticker-go').addEventListener('click', ()=>{
+  setTicker(document.getElementById('ticker-input').value);
+});
+document.getElementById('ticker-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') setTicker(e.target.value);
+});
+
+renderAll('1M');
+</script>
+
+</body>
+</html>
