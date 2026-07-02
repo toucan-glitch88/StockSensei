@@ -1,0 +1,10 @@
+print("
+Pipeline: Data Collection → Data Cleaning → Feature Engineering → XGBoost Model → Evaluation → Frontend Dashboard
+
+Primary data sources:
+- Yahoo Finance
+- Alpha Vantage
+- Finnhub
+- NewsAPI
+
+")
