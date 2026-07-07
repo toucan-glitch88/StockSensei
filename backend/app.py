@@ -18,6 +18,14 @@ def home():
         "message": "StockSensei backend is running"
     })
 
+@app.route("/tickers")
+def get_tickers():
+    tickers = sorted(df["Ticker"].dropna().unique().tolist())
+
+    return jsonify({
+        "count": len(tickers),
+        "tickers": tickers
+    })
 
 @app.route("/predict/<ticker>")
 def predict(ticker):
