@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockSensei — Prediction Market</title>
+<style>
+  :root{
+    --bg: #eef1fb;
+    --header-bg-1: #8fa8d3;
+    --header-bg-2: #a9b8d9;
+    --green: #1e9e4b;
+    --green-bg: #e7f6ec;
+    --red: #d93636;
+    --red-bg: #fbe9e8;
+    --text-dark: #14171f;
+    --text-mid: #5c6270;
+    --text-light: #8b909c;
+    --border: #e5e7ec;
+    --white: #ffffff;
+    --pill-bg: #f2f3f6;
+    --accent-purple: #8b7bf0;
+    --radius-lg: 20px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text-dark);
+    padding-bottom: 60px;
+  }
+
+  header{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    padding: 18px 40px;
+    background: linear-gradient(90deg, var(--header-bg-1), var(--header-bg-2));
+  }
+
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size: 22px;
+    color: var(--text-dark);
+    letter-spacing: 0.5px;
+  }
+
+  .logo-icon{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+  }
+
+  .logo .brand-blue{ color:#2f6fed; }
+
+  nav{
+    display:flex;
+    gap:36px;
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  nav a{
+    text-decoration:none;
+    color: var(--text-dark);
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  nav a:hover{ opacity:0.75; }
+
+  nav a.active{
+    font-weight: 800;
+  }
+
+  main{
+    display:flex;
+    gap:24px;
+    padding: 28px 40px 0;
+    align-items:flex-start;
+  }
+
+  .panel{
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 6px 18px rgba(20,23,31,0.06);
+  }
+
+  .stock-panel{
+    flex: 1.6;
+    padding: 28px 30px;
+  }
+
+  .stock-panel h1{
+    margin:0 0 4px;
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .stock-panel .subtitle{
+    margin:0 0 18px;
+    color: var(--text-mid);
+    font-size: 14px;
+  }
+
+  .search-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    color: var(--text-light);
+  }
+
+  .search-box input{
+    border:none;
+    outline:none;
+    flex:1;
+    font-size:14px;
+    color: var(--text-dark);
+  }
+
+  .filters{
+    display:flex;
+    gap:8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill{
+    border:1px solid var(--border);
+    background: var(--white);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-mid);
+    cursor:pointer;
+  }
+
+  .filter-pill.active{
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--white);
+  }
+
+  table{
+    width:100%;
+    border-collapse: collapse;
+  }
+
+  thead th{
+    text-align:left;
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td{
+    padding: 14px 6px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  tbody tr{
+    transition: background 0.12s ease;
+  }
+
+  tbody tr:hover{
+    background:#f6f8fc;
+  }
+
+  tbody tr:last-child td{ border-bottom:none; }
+
+  .ticker-cell{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight: 700;
+  }
+
+  .ticker-icon{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:14px;
+    flex-shrink:0;
+  }
+
+  .company-name{ color: var(--text-mid); }
+
+  .change.up{ color: var(--green); font-weight:600; }
+  .change.down{ color: var(--red); font-weight:600; }
+
+  .trend-cell{ width:70px; }
+
+  .row-arrow{
+    color: var(--text-light);
+    text-align:right;
+  }
+
+  .pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-top: 22px;
+  }
+
+  .pagination button{
+    border:none;
+    background:none;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    font-size:14px;
+    color: var(--text-mid);
+    cursor:pointer;
+  }
+
+  .pagination button.active{
+    background: var(--green);
+    color: var(--white);
+    font-weight:700;
+  }
+
+  .prediction-panel{
+    flex: 1;
+    border: 2px dashed var(--accent-purple);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+  }
+
+  .stock-header{
+    background: #cfd4dc;
+    border-radius: 16px 16px 0 0;
+    padding: 22px 24px 18px;
+    position: relative;
+  }
+
+  .expand-btn{
+    position:absolute;
+    top:22px;
+    right:22px;
+    background: var(--text-dark);
+    color: var(--white);
+    border:none;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .stock-header-top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom: 14px;
+  }
+
+  .stock-logo-circle{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background: var(--text-dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:26px;
+    font-weight:800;
+    flex-shrink:0;
+  }
+
+  .stock-header-top h2{
+    margin:0;
+    font-size: 26px;
+    font-weight:800;
+  }
+
+  .stock-header-top .company-full{
+    margin:0;
+    color: var(--text-mid);
+    font-size: 14px;
+  }
+
+  .price-row{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .price-row .price{
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  .price-row .delta{
+    color: var(--green);
+    font-weight:700;
+    font-size: 15px;
+  }
+
+  .prediction-body{
+    padding: 22px 24px 24px;
+  }
+
+  .prediction-card{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background: var(--green-bg);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+
+  .prediction-icon{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#d4f0dd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    font-size:26px;
+  }
+
+  .prediction-card .label{
+    margin:0;
+    font-size:14px;
+    font-weight:700;
+    color: var(--text-dark);
+  }
+
+  .prediction-card .value{
+    margin:2px 0 0;
+    font-size: 30px;
+    font-weight:800;
+    color: var(--green);
+  }
+
+  .details-card{
+    background:#f7f8fb;
+    border:1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom:18px;
+  }
+
+  .details-card p{
+    margin:7px 0;
+    font-size:13px;
+    color:var(--text-mid);
+  }
+
+  .details-card strong{
+    color:var(--text-dark);
+  }
+
+  .confidence-block{
+    margin-bottom: 22px;
+  }
+
+  .confidence-block .cf-label{
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+
+  .confidence-bar-bg{
+    background:#e5e7ec;
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+    margin-bottom:6px;
+  }
+
+  .confidence-bar-fill{
+    background: var(--green);
+    height:100%;
+    border-radius:999px;
+    width:72%;
+  }
+
+  .cf-percent{
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--green);
+  }
+
+  .chart-block h3{
+    font-size:15px;
+    font-weight:700;
+    margin: 0 0 12px;
+  }
+
+  .chart-wrap{
+    width:100%;
+  }
+
+  .disclaimer{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background: #f2effc;
+    border: 1px solid #e2ddf8;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight:600;
+    color: #4c3fb0;
+  }
+
+  .fine-print{
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 10px;
+    line-height:1.5;
+  }
+
+  .bottom-label{
+    display:flex;
+    justify-content:center;
+    margin-top: 34px;
+  }
+
+  .bottom-label span{
+    background: var(--text-dark);
+    color: var(--white);
+    font-weight:800;
+    font-size: 26px;
+    padding: 16px 46px;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 900px){
+    main{ flex-direction:column; padding: 20px; }
+    header{ flex-wrap:wrap; gap:14px; padding: 16px 20px; }
+    nav{ gap:18px; flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">📈</span>
+    <span>STOCK<span class="brand-blue">SENSEI</span></span>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="predict.html" class="active">Predict</a>
+    <a href="#">Learn</a>
+    <a href="#">Watchlist</a>
+    <a href="#">Explore</a>
+    <a href="about.html">About Us</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="panel stock-panel">
+    <h1>Select a Stock</h1>
+    <p class="subtitle">Choose a stock to view its prediction market.</p>
+
+    <div class="search-box">
+      <span>🔍</span>
+      <input id="stock-search" type="text" placeholder="Search stocks...">
+    </div>
+
+    <div class="filters">
+      <button class="filter-pill active">All</button>
+      <button class="filter-pill">Popular</button>
+      <button class="filter-pill">Tech</button>
+      <button class="filter-pill">Finance</button>
+      <button class="filter-pill">Health</button>
+      <button class="filter-pill">Energy</button>
+      <button class="filter-pill">Consumer</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Stock</th>
+          <th>Company</th>
+          <th>Price</th>
+          <th>Change</th>
+          <th>Trend</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="stock-table-body">
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button>‹</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>5</button>
+      <button>›</button>
+    </div>
+  </section>
+
+  <section class="prediction-panel">
+    <div class="stock-header">
+      <button class="expand-btn" onclick="alert('Expanded view coming soon')">Expand View</button>
+      <div class="stock-header-top">
+        <div class="stock-logo-circle" id="selected-logo">A</div>
+        <div>
+          <h2 id="selected-ticker">AAPL</h2>
+          <p class="company-full" id="selected-company">Apple Inc.</p>
+        </div>
+      </div>
+      <div class="price-row">
+        <span class="price" id="selected-price">$--</span>
+        <span class="delta" id="selected-date">Click a stock to load prediction</span>
+      </div>
+    </div>
+
+    <div class="panel prediction-body" style="border-radius:0 0 16px 16px; box-shadow:none;">
+      <div class="prediction-card" id="prediction-card">
+        <div class="prediction-icon" id="prediction-icon">⏳</div>
+        <div>
+          <p class="label">Prediction:</p>
+          <p class="value" id="prediction-value">Waiting</p>
+        </div>
+      </div>
+
+      <div class="details-card">
+        <p><strong>Daily Return:</strong> <span id="daily-return">--</span></p>
+        <p><strong>5-Day Moving Average:</strong> <span id="ma-5">--</span></p>
+        <p><strong>10-Day Moving Average:</strong> <span id="ma-10">--</span></p>
+        <p><strong>Risk Level:</strong> <span id="risk-level">--</span></p>
+        <p><strong>Risk Explanation:</strong> <span id="risk-explanation">--</span></p>
+      </div>
+
+      <div class="confidence-block">
+        <div class="cf-label">Confidence</div>
+        <div class="cf-percent" id="confidence-percent">--%</div>
+        <div class="confidence-bar-bg">
+          <div class="confidence-bar-fill" id="confidence-fill"></div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <h3>Next 5 Days (Projected)</h3>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 460 200" width="100%" height="200">
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e9e4b" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#1e9e4b" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <line x1="40" y1="10" x2="40" y2="160" stroke="#e5e7ec"/>
+            <line x1="40" y1="160" x2="450" y2="160" stroke="#e5e7ec"/>
+
+            <text x="0" y="14" font-size="11" fill="#8b909c">190</text>
+            <text x="0" y="52" font-size="11" fill="#8b909c">185</text>
+            <text x="0" y="90" font-size="11" fill="#8b909c">180</text>
+            <text x="0" y="128" font-size="11" fill="#8b909c">175</text>
+
+            <polygon points="40,148 122,132 204,110 286,88 368,62 450,20 450,160 40,160"
+                     fill="url(#areaFill)"/>
+
+            <polyline points="40,148 122,132 204,110 286,88 368,62 450,20"
+                      fill="none" stroke="#1e9e4b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <circle cx="40" cy="148" r="4" fill="#1e9e4b"/>
+            <circle cx="122" cy="132" r="4" fill="#1e9e4b"/>
+            <circle cx="204" cy="110" r="4" fill="#1e9e4b"/>
+            <circle cx="286" cy="88" r="4" fill="#1e9e4b"/>
+            <circle cx="368" cy="62" r="4" fill="#1e9e4b"/>
+            <circle cx="450" cy="20" r="5" fill="#1e9e4b"/>
+
+            <text x="30" y="178" font-size="11" fill="#8b909c">Today</text>
+            <text x="108" y="178" font-size="11" fill="#8b909c">Day 1</text>
+            <text x="190" y="178" font-size="11" fill="#8b909c">Day 2</text>
+            <text x="272" y="178" font-size="11" fill="#8b909c">Day 3</text>
+            <text x="354" y="178" font-size="11" fill="#8b909c">Day 4</text>
+            <text x="436" y="178" font-size="11" fill="#8b909c">Day 5</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <span>ⓘ</span>
+        <span>Educational only,<br>not financial advice.</span>
+      </div>
+      <p class="fine-print">This prediction is for informational purposes only and is based on model analysis. It is not a recommendation to buy or sell any securities.</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="bottom-label">
+  <span>Prediction Market</span>
+</div>
+
+<script>
+  const stocks = [
+    { ticker: "AAPL", company: "Apple Inc.", price: "$188.42", change: "+2.35 (+1.26%)", up: true, color:"#000000" },
+    { ticker: "MSFT", company: "Microsoft Corporation", price: "$415.78", change: "+6.42 (+1.57%)", up: true, color:"#00A4EF" },
+    { ticker: "NVDA", company: "NVIDIA Corporation", price: "$1,248.72", change: "+15.86 (+1.29%)", up: true, color:"#76B900" },
+    { ticker: "GOOGL", company: "Alphabet Inc.", price: "$168.15", change: "+1.84 (+1.11%)", up: true, color:"#4285F4" },
+    { ticker: "AMZN", company: "Amazon.com, Inc.", price: "$178.86", change: "-0.72 (-0.40%)", up: false, color:"#FF9900" },
+    { ticker: "TSLA", company: "Tesla, Inc.", price: "$175.35", change: "+3.28 (+1.91%)", up: true, color:"#CC0000" },
+    { ticker: "META", company: "Meta Platforms, Inc.", price: "$485.28", change: "+4.73 (+0.98%)", up: true, color:"#0866FF" },
+    { ticker: "JPM", company: "JPMorgan Chase & Co.", price: "$202.55", change: "-1.21 (-0.59%)", up: false, color:"#000000" },
+    { ticker: "XOM", company: "Exxon Mobil Corporation", price: "$115.26", change: "+0.88 (+0.77%)", up: true, color:"#FF1B1C" },
+    { ticker: "JNJ", company: "Johnson & Johnson", price: "$156.63", change: "+0.42 (+0.27%)", up: true, color:"#CF102D" }
+  ];
+
+  function sparkline(up){
+    const pts = up
+      ? "0,18 10,14 20,16 30,8 40,10 50,2"
+      : "0,4 10,8 20,6 30,12 40,10 50,18";
+
+    const stroke = up ? "#1e9e4b" : "#d93636";
+
+    return `<svg width="52" height="20" viewBox="0 0 52 20">
+      <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  function renderStockTable(stockList) {
+    const tbody = document.getElementById("stock-table-body");
+
+    tbody.innerHTML = stockList.map(s => `
+      <tr onclick="selectStock('${s.ticker}')" style="cursor:pointer;">
+        <td>
+          <div class="ticker-cell">
+            <span class="ticker-icon" style="background:${s.color}">${s.ticker.charAt(0)}</span>
+            ${s.ticker}
+          </div>
+        </td>
+        <td class="company-name">${s.company}</td>
+        <td>${s.price}</td>
+        <td class="change ${s.up ? 'up' : 'down'}">${s.change}</td>
+        <td class="trend-cell">${sparkline(s.up)}</td>
+        <td class="row-arrow">›</td>
+      </tr>
+    `).join("");
+  }
+
+  async function selectStock(ticker) {
+    const selectedStock = stocks.find(stock => stock.ticker === ticker);
+
+    document.getElementById("selected-ticker").textContent = ticker;
+    document.getElementById("selected-logo").textContent = ticker.charAt(0);
+    document.getElementById("selected-company").textContent = selectedStock ? selectedStock.company : "Selected stock";
+    document.getElementById("selected-price").textContent = "Loading...";
+    document.getElementById("selected-date").textContent = "Getting prediction...";
+    document.getElementById("prediction-value").textContent = "Loading";
+    document.getElementById("confidence-percent").textContent = "--%";
+    document.getElementById("confidence-fill").style.width = "0%";
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predict/" + ticker);
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Could not get prediction");
+        return;
+      }
+
+      document.getElementById("selected-ticker").textContent = data.ticker;
+      document.getElementById("selected-logo").textContent = data.ticker.charAt(0);
+      document.getElementById("selected-company").textContent = selectedStock ? selectedStock.company : "Selected stock";
+      document.getElementById("selected-price").textContent = "$" + data.current_price;
+      document.getElementById("selected-date").textContent = "Latest data: " + data.latest_date;
+
+      document.getElementById("daily-return").textContent = data.daily_return_percent + "%";
+      document.getElementById("ma-5").textContent = "$" + data.moving_average_5;
+      document.getElementById("ma-10").textContent = "$" + data.moving_average_10;
+      document.getElementById("risk-level").textContent = data.risk_level;
+      document.getElementById("risk-explanation").textContent = data.risk_explanation;
+
+      document.getElementById("prediction-value").textContent = data.prediction;
+      document.getElementById("confidence-percent").textContent = data.confidence + "%";
+      document.getElementById("confidence-fill").style.width = data.confidence + "%";
+
+      const predictionCard = document.getElementById("prediction-card");
+      const predictionValue = document.getElementById("prediction-value");
+      const predictionIcon = document.getElementById("prediction-icon");
+      const confidenceFill = document.getElementById("confidence-fill");
+      const confidencePercent = document.getElementById("confidence-percent");
+
+      if (data.prediction === "Up") {
+        predictionCard.style.background = "#e7f6ec";
+        predictionValue.style.color = "#1e9e4b";
+        predictionIcon.textContent = "📈";
+        confidenceFill.style.background = "#1e9e4b";
+        confidencePercent.style.color = "#1e9e4b";
+      } else {
+        predictionCard.style.background = "#fbe9e8";
+        predictionValue.style.color = "#d93636";
+        predictionIcon.textContent = "📉";
+        confidenceFill.style.background = "#d93636";
+        confidencePercent.style.color = "#d93636";
+      }
+
+    } catch (error) {
+      alert("Could not connect to backend. Make sure Flask is running.");
+    }
+  }
+
+  document.getElementById("stock-search").addEventListener("input", function(e) {
+    const searchValue = e.target.value.toUpperCase();
+
+    const filteredStocks = stocks.filter(stock =>
+      stock.ticker.includes(searchValue) ||
+      stock.company.toUpperCase().includes(searchValue)
+    );
+
+    renderStockTable(filteredStocks);
+  });
+
+  renderStockTable(stocks);
+</script>
+
+</body>
+</html>

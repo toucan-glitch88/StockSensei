@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockSensei — Meet the Developers</title>
+<style>
+  :root{
+    --bg: #eef1fb;
+    --header-bg-1: #8fa8d3;
+    --header-bg-2: #a9b8d9;
+    --navy: #1b2340;
+    --blue: #2f5be0;
+    --blue-light: #dbe4fb;
+    --text-mid: #4a5064;
+    --text-light: #7b8194;
+    --white: #ffffff;
+    --border: #e5e7ec;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--navy);
+  }
+
+  .serif{ font-family: Georgia, "Times New Roman", Times, serif; }
+
+  /* ---------- HEADER (shared with main site) ---------- */
+  header{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    padding: 18px 40px;
+    background: linear-gradient(90deg, var(--header-bg-1), var(--header-bg-2));
+  }
+
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size: 22px;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+
+  .logo-icon{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .logo .brand-blue{ color:#2f6fed; }
+
+  nav{
+    display:flex;
+    gap:36px;
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  nav a{
+    text-decoration:none;
+    color: var(--navy);
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  nav a:hover{ opacity:0.75; }
+
+  nav a.active{
+    font-weight: 700;
+  }
+
+  .avatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:#5b5b5b;
+    flex-shrink:0;
+    justify-self:end;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    text-align:center;
+    padding: 60px 20px 46px;
+  }
+
+  .hero h1{
+    margin:0 0 18px;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .hero p{
+    max-width: 760px;
+    margin: 0 auto;
+    font-size: 21px;
+    line-height: 1.5;
+    color: #2b3358;
+  }
+
+  /* ---------- TEAM GRID ---------- */
+  .team-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 40px 50px;
+  }
+
+  .team-card{
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent;
+    padding: 34px 26px;
+    min-height: 340px;
+    box-shadow: 0 6px 16px rgba(20,23,31,0.05);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  .team-card.empty{
+    border-color: #2f6fed;
+    min-height: 340px;
+  }
+
+  .avatar-circle{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background: var(--blue-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 34px;
+    font-weight:700;
+    color: var(--blue);
+    margin-bottom: 18px;
+  }
+
+  .team-card h3{
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .team-card .role{
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .team-card .bio{
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .tag-row{
+    display:flex;
+    gap:8px;
+    flex-wrap: wrap;
+    justify-content:center;
+    margin-top:auto;
+  }
+
+  .tag{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background: #f4f5f8;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight:600;
+    color: var(--text-mid);
+  }
+
+  .tag svg{ flex-shrink:0; }
+
+  /* ---------- MISSION ---------- */
+  .mission{
+    max-width: 1500px;
+    margin: 0 auto 30px;
+    padding: 0 40px;
+  }
+
+  .mission-card{
+    background: var(--white);
+    border-radius: var(--radius-md);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 30px;
+    padding: 40px 50px;
+    box-shadow: 0 6px 16px rgba(20,23,31,0.05);
+  }
+
+  .mission-icon{
+    flex-shrink:0;
+  }
+
+  .mission-text{
+    flex:1;
+  }
+
+  .mission-text h2{
+    margin: 0 0 14px;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  .mission-text p{
+    margin: 0 0 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-mid);
+  }
+
+  .mission-illustration{
+    flex-shrink:0;
+  }
+
+  /* ---------- BUILT WITH ---------- */
+  .built-with{
+    max-width: 1500px;
+    margin: 0 auto 60px;
+    padding: 0 40px;
+  }
+
+  .built-with-card{
+    background: var(--white);
+    border-radius: var(--radius-md);
+    display:flex;
+    align-items:center;
+    gap: 26px;
+    padding: 22px 34px;
+    flex-wrap: wrap;
+    box-shadow: 0 6px 16px rgba(20,23,31,0.05);
+  }
+
+  .built-with-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--navy);
+    padding-right: 20px;
+    border-right: 1px solid var(--border);
+  }
+
+  .built-with-title .icon-box{
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    background: var(--blue-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .stack-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: #f4f5f8;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight:600;
+    color: var(--navy);
+  }
+
+  @media (max-width: 1100px){
+    .team-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px){
+    .team-grid{ grid-template-columns: 1fr; }
+    .mission-card{ flex-direction:column; text-align:center; }
+    .hero h1{ font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">
+      <svg width="30" height="30" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22.5" fill="#ffffff" stroke="#2f6fed" stroke-width="1.4"/>
+        <clipPath id="badgeClip"><circle cx="24" cy="24" r="21.5"/></clipPath>
+        <g clip-path="url(#badgeClip)">
+          <polyline points="4,34 11,27 16,31 21,21 26,27 32,17 38,23 45,18"
+                    fill="none" stroke="#2f6fed" stroke-width="1.4" opacity="0.35"/>
+          <line x1="9" y1="13" x2="37" y2="41" stroke="#14171f" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
+          <path d="M17 27 L31 27 L38 43 L10 43 Z" fill="#2f6fed"/>
+          <path d="M14 36 L34 36 L32 40 L16 40 Z" fill="#1c3fb0"/>
+          <path d="M17 23 C17 33 31 33 31 23 C29 29 19 29 17 23 Z" fill="#f5f5f5"/>
+          <circle cx="24" cy="19" r="6" fill="#2f6fed"/>
+          <circle cx="21.7" cy="18.5" r="0.9" fill="#0d1220"/>
+          <circle cx="26.3" cy="18.5" r="0.9" fill="#0d1220"/>
+          <path d="M24 5 L15.5 21 C20 19 28 19 32.5 21 Z" fill="#14171f"/>
+          <circle cx="24" cy="5" r="1.5" fill="#14171f"/>
+          <circle cx="26" cy="30" r="2.1" fill="#14171f"/>
+        </g>
+      </svg>
+    </span>
+    <span>STOCK<span class="brand-blue">SENSEI</span></span>
+  </div>
+  <nav>
+  <a href="index.html">Home</a>
+  <a href="predict.html">Predict</a>
+  <a href="#">Learn</a>
+  <a href="#">Watchlist</a>
+  <a href="#">Explore</a>
+  <a href="about.html" class="active">About Us</a>
+</nav>
+  <div class="avatar"></div>
+</header>
+
+<section class="hero">
+  <h1 class="serif">Meet the developers</h1>
+  <p class="serif">We're a team of students and builders who created StockSensei to make stock predictions easier to understand for everyone.</p>
+</section>
+
+<section class="team-grid">
+
+  <!-- Tanay Kataru -->
+  <div class="team-card">
+    <div class="avatar-circle serif">TK</div>
+    <h3 class="serif">Tanay Kataru</h3>
+    <div class="role">Backend / Design</div>
+    <p class="bio serif">Enjoys working with data pipelines and building reliable backend systems</p>
+    <div class="tag-row">
+      <span class="tag">🎨 Figma</span>
+      <span class="tag">🌐 HTML/CSS</span>
+      <span class="tag">🐙 GitHub</span>
+    </div>
+  </div>
+
+  <!-- Mohit Modi -->
+  <div class="team-card">
+    <div class="avatar-circle serif">MM</div>
+    <h3 class="serif">Mohit Modi</h3>
+    <div class="role">Frontend / Reports</div>
+    <p class="bio serif">Focused on building clean user interfaces and turning model outputs into clear, readable reports</p>
+    <div class="tag-row">
+      <span class="tag">🌐 HTML/CSS</span>
+      <span class="tag">📊 Reports</span>
+      <span class="tag">🐙 GitHub</span>
+    </div>
+  </div>
+
+  <!-- Havish Vatti -->
+  <div class="team-card">
+    <div class="avatar-circle serif">HV</div>
+    <h3 class="serif">Havish Vatti</h3>
+    <div class="role">Frontend / Reports</div>
+    <p class="bio serif">Passionate about responsive design and presenting stock data in a way that's easy to understand</p>
+    <div class="tag-row">
+      <span class="tag">🌐 HTML/CSS</span>
+      <span class="tag">📊 Reports</span>
+      <span class="tag">🐙 GitHub</span>
+    </div>
+  </div>
+
+  <!-- Eashan Tilaye -->
+  <div class="team-card">
+    <div class="avatar-circle serif">ET</div>
+    <h3 class="serif">Eashan Tilaye</h3>
+    <div class="role">Project Manager</div>
+    <p class="bio serif">Keeps the team organized, timelines on track, and makes sure every piece of StockSensei fits together</p>
+    <div class="tag-row">
+      <span class="tag">🗂️ Planning</span>
+      <span class="tag">🐙 GitHub</span>
+      <span class="tag">✅ QA</span>
+    </div>
+  </div>
+
+</section>
+
+<section class="mission">
+  <div class="mission-card">
+    <div class="mission-icon">
+      <svg width="90" height="90" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#2f6fed" stroke-width="6"/>
+        <circle cx="50" cy="50" r="26" fill="none" stroke="#2f6fed" stroke-width="6"/>
+        <circle cx="50" cy="50" r="12" fill="#2f6fed"/>
+        <line x1="50" y1="50" x2="76" y2="24" stroke="#14171f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M76 24 L90 10 L92 22 L76 24 Z" fill="#14171f"/>
+      </svg>
+    </div>
+    <div class="mission-text">
+      <h2>Our Mission</h2>
+      <p>At StockSensei, our mission is to make stock market learning simple, engaging, and accessible for students and beginner investors. We use data and technology to provide easy-to-understand predictions and insights.</p>
+      <p>We are committed to keeping StockSensei educational and transparent — empowering you to learn, explore, and grow with confidence.</p>
+    </div>
+    <div class="mission-illustration">
+      <svg width="180" height="120" viewBox="0 0 180 120">
+        <polyline points="10,100 45,70 70,85 100,45 135,60 165,15" fill="none" stroke="#2f6fed" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M150 15 L165 15 L165 30" fill="none" stroke="#2f6fed" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="35" y="90" width="18" height="26" fill="#a9c2f7"/>
+        <rect x="70" y="75" width="18" height="41" fill="#7fa4f2"/>
+        <rect x="105" y="55" width="18" height="61" fill="#5c85ea"/>
+        <rect x="140" y="35" width="18" height="81" fill="#2f5be0"/>
+        <line x1="10" y1="116" x2="170" y2="116" stroke="#c9d2e6" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="built-with">
+  <div class="built-with-card">
+    <div class="built-with-title">
+      <span class="icon-box">&lt;/&gt;</span>
+      Built With
+    </div>
+    <span class="stack-pill">🐍 Python</span>
+    <span class="stack-pill">🧠 Machine Learning</span>
+    <span class="stack-pill">📈 Historical Stock Data</span>
+    <span class="stack-pill">🎨 Figma</span>
+    <span class="stack-pill">🐙 GitHub</span>
+    <span class="stack-pill">🌐 HTML/CSS</span>
+  </div>
+</section>
+
+</body>
+</html>
