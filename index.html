@@ -31,48 +31,43 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:16px 40px;
-    background:linear-gradient(90deg,#7f9ac9,#a9b8d9);
+    gap:28px;
+    padding:14px clamp(20px, 5vw, 72px);
+    background:linear-gradient(90deg,#8fa8d3,#a9b8d9);
+    position:sticky;
+    top:0;
+    z-index:10;
   }
   .logo{
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    gap:10px;
-    font-weight:800;
-    font-size:18px;
-    color:var(--navy);
-    letter-spacing:0.5px;
+    text-decoration:none;
+    flex-shrink:0;
   }
-  .logo-icon{
-    width:34px;height:34px;
-    background:var(--navy);
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    color:#fff;
-    font-size:16px;
+  .brand-logo{
+    display:block;
+    width:clamp(230px, 28vw, 360px);
+    max-height:86px;
+    object-fit:contain;
   }
   nav{
     display:flex;
-    gap:32px;
+    gap:clamp(18px, 3vw, 42px);
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:flex-end;
   }
   nav button{
     background:none;
     border:none;
-    font-size:15px;
-    font-weight:600;
+    font-size:17px;
+    font-weight:500;
     color:var(--navy);
     cursor:pointer;
-    padding:6px 4px;
-    border-bottom:2px solid transparent;
-    transition:border-color .15s ease, opacity .15s ease;
+    padding:4px 2px;
   }
   nav button:hover{
-    border-bottom-color:var(--navy);
-  }
-  .avatar{
-    width:36px;height:36px;
-    border-radius:50%;
-    background:#4a4a4a;
+    opacity:0.75;
   }
   main{
     max-width:1200px;
@@ -282,8 +277,18 @@
 
   @media (max-width:860px){
     main{grid-template-columns:1fr;}
-    header{padding:14px 20px;flex-wrap:wrap;gap:10px;}
-    nav{gap:16px;flex-wrap:wrap;}
+    header{
+      align-items:flex-start;
+      flex-direction:column;
+      gap:14px;
+      padding:14px 20px;
+    }
+    nav{
+      gap:12px 18px;
+      justify-content:flex-start;
+    }
+    nav button{font-size:15px;}
+    .brand-logo{width:min(100%, 320px);}
     .hero h1{font-size:36px;}
     .row-links{flex-direction:column;}
   }
@@ -292,10 +297,9 @@
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">🧢</div>
-    STOCK SENSEI
-  </div>
+  <a class="logo" href="frontend/index.html" aria-label="StockSensei home">
+    <img class="brand-logo" src="frontend/assets/stocksensei-logo.png" alt="StockSensei">
+  </a>
   <nav>
     <button onclick="sendPrompt('Go to Home')">Home</button>
     <button onclick="sendPrompt('Go to Predict')">Predict</button>
@@ -304,7 +308,6 @@
     <button onclick="sendPrompt('Go to Explore')">Explore</button>
     <button onclick="sendPrompt('Go to About Us')">About Us</button>
   </nav>
-  <div class="avatar"></div>
 </header>
 
 <main>
