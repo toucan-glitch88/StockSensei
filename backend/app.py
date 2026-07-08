@@ -2,102 +2,31 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import pandas as pd
 import joblib
+import yfinance as yf
 from pathlib import Path
 
-
-# -----------------------------
-# App setup
-# -----------------------------
 
 app = Flask(__name__)
 CORS(app)
 
 
-# -----------------------------
-# File paths
-# -----------------------------
-
 BASE_DIR = Path(__file__).resolve().parent
 
-DATA_PATH = BASE_DIR / "data" / "SP500_Historical_Data.csv"
 MODEL_PATH = BASE_DIR / "models" / "stock_direction_model.pkl"
 FEATURES_PATH = BASE_DIR / "models" / "features.pkl"
 
 
-# -----------------------------
-# Load data and model once
-# -----------------------------
-
 try:
-    df = pd.read_csv(DATA_PATH)
     model = joblib.load(MODEL_PATH)
     features = joblib.load(FEATURES_PATH)
-
-    df["Date"] = pd.to_datetime(df["Date"])
-
-    # Make sure ticker symbols are uppercase
-    df["Ticker"] = df["Ticker"].astype(str).str.upper()
-
-    # Feature engineering
-    df = df.sort_values(["Ticker", "Date"])
-
-    df["Daily_Return"] = df.groupby("Ticker")["Close"].pct_change()
-    df["MA_5"] = df.groupby("Ticker")["Close"].transform(
-        lambda x: x.rolling(window=5).mean()
-    )
-    df["MA_10"] = df.groupby("Ticker")["Close"].transform(
-        lambda x: x.rolling(window=10).mean()
-    )
-    df["Volume_Change"] = df.groupby("Ticker")["Volume"].pct_change()
-    df["Volatility_5"] = df.groupby("Ticker")["Close"].transform(
-        lambda x: x.rolling(window=5).std()
-    )
-
 except Exception as e:
-    print("Error loading backend files:", e)
-    df = None
+    print("Error loading model files:", e)
     model = None
     features = None
 
 
-# -----------------------------
-# Helper functions
-# -----------------------------
-
 def backend_ready():
-    return df is not None and model is not None and features is not None
-
-
-def get_stock_data(ticker):
-    ticker = ticker.upper()
-    stock_data = df[df["Ticker"] == ticker].copy()
-
-    if stock_data.empty:
-        return None
-
-    stock_data = stock_data.sort_values("Date")
-    return stock_data
-
-
-def get_latest_valid_row(stock_data):
-    clean_data = stock_data.dropna(subset=features)
-
-    if clean_data.empty:
-        return None
-
-    return clean_data.iloc[-1]
-
-
-def calculate_risk_level(confidence, volatility):
-    if volatility is None or pd.isna(volatility):
-        return "Medium", "Risk is estimated as medium because volatility data is limited."
-
-    if confidence >= 75 and volatility < 3:
-        return "Low", "The model has higher confidence and recent volatility is relatively low."
-    elif confidence >= 60 and volatility < 6:
-        return "Medium", "The model has moderate confidence or the stock has some recent volatility."
-    else:
-        return "High", "The model has lower confidence or the stock has higher recent volatility."
+    return model is not None and features is not None
 
 
 def format_price(value):
@@ -112,19 +41,81 @@ def format_percent(value):
     return round(float(value) * 100, 2)
 
 
-# -----------------------------
-# Routes
-# -----------------------------
+def calculate_risk_level(confidence, volatility):
+    if volatility is None or pd.isna(volatility):
+        return "Medium", "Risk is estimated as medium because volatility data is limited."
+
+    if confidence >= 75 and volatility < 3:
+        return "Low", "The model has higher confidence and recent volatility is relatively low."
+    elif confidence >= 60 and volatility < 6:
+        return "Medium", "The model has moderate confidence or the stock has some recent volatility."
+    else:
+        return "High", "The model has lower confidence or the stock has higher recent volatility."
+
+
+def get_yfinance_data(ticker):
+    ticker = ticker.upper().strip()
+
+    stock = yf.Ticker(ticker)
+
+    history = stock.history(period="60d", interval="1d")
+
+    if history.empty:
+        return None, None
+
+    history = history.reset_index()
+
+    if "Date" not in history.columns:
+        history.rename(columns={"Datetime": "Date"}, inplace=True)
+
+    history["Date"] = pd.to_datetime(history["Date"]).dt.tz_localize(None)
+
+    history["Ticker"] = ticker
+
+    history = history[["Ticker", "Date", "Open", "High", "Low", "Close", "Volume"]]
+
+    return stock, history
+
+
+def add_model_features(stock_data):
+    stock_data = stock_data.copy()
+    stock_data = stock_data.sort_values("Date")
+
+    stock_data["Daily_Return"] = stock_data["Close"].pct_change()
+    stock_data["MA_5"] = stock_data["Close"].rolling(window=5).mean()
+    stock_data["MA_10"] = stock_data["Close"].rolling(window=10).mean()
+    stock_data["Volume_Change"] = stock_data["Volume"].pct_change()
+    stock_data["Volatility_5"] = stock_data["Close"].rolling(window=5).std()
+
+    return stock_data
+
+
+def get_company_name(stock):
+    try:
+        info = stock.info
+        return info.get("longName") or info.get("shortName") or "Company name unavailable"
+    except Exception:
+        return "Company name unavailable"
+
+
+def get_latest_valid_row(stock_data):
+    clean_data = stock_data.dropna(subset=features)
+
+    if clean_data.empty:
+        return None
+
+    return clean_data.iloc[-1]
+
 
 @app.route("/")
 def home():
     return jsonify({
         "app": "StockSensei Backend",
         "status": "running",
+        "data_source": "Yahoo Finance through yfinance",
         "routes": [
             "/health",
-            "/tickers",
-            "/summary/<ticker>",
+            "/live/<ticker>",
             "/history/<ticker>",
             "/predict/<ticker>"
         ],
@@ -136,53 +127,43 @@ def home():
 def health():
     return jsonify({
         "status": "ok" if backend_ready() else "error",
-        "data_loaded": df is not None,
         "model_loaded": model is not None,
-        "features_loaded": features is not None
+        "features_loaded": features is not None,
+        "data_source": "yfinance"
     })
 
 
-@app.route("/tickers")
-def get_tickers():
+@app.route("/live/<ticker>")
+def live_summary(ticker):
     if not backend_ready():
         return jsonify({
-            "error": "Backend files are not loaded correctly."
+            "error": "Model files are not loaded correctly."
         }), 500
 
-    tickers = sorted(df["Ticker"].dropna().unique().tolist())
+    ticker = ticker.upper().strip()
 
-    return jsonify({
-        "count": len(tickers),
-        "tickers": tickers
-    })
-
-
-@app.route("/summary/<ticker>")
-def get_summary(ticker):
-    if not backend_ready():
-        return jsonify({
-            "error": "Backend files are not loaded correctly."
-        }), 500
-
-    ticker = ticker.upper()
-    stock_data = get_stock_data(ticker)
+    stock, stock_data = get_yfinance_data(ticker)
 
     if stock_data is None:
         return jsonify({
-            "error": "Ticker not found",
+            "error": "Ticker not found or no data returned from yfinance.",
             "ticker": ticker
         }), 404
 
+    stock_data = add_model_features(stock_data)
     latest_row = get_latest_valid_row(stock_data)
 
     if latest_row is None:
         return jsonify({
-            "error": "Not enough clean data for this ticker",
+            "error": "Not enough recent data to calculate features.",
             "ticker": ticker
         }), 400
 
+    company_name = get_company_name(stock)
+
     return jsonify({
         "ticker": ticker,
+        "company_name": company_name,
         "latest_date": latest_row["Date"].strftime("%Y-%m-%d"),
         "current_price": format_price(latest_row["Close"]),
         "open": format_price(latest_row["Open"]),
@@ -194,31 +175,28 @@ def get_summary(ticker):
         "moving_average_10": format_price(latest_row["MA_10"]),
         "volume_change_percent": format_percent(latest_row["Volume_Change"]),
         "volatility_5": format_price(latest_row["Volatility_5"]),
-        "note": "Summary is based on the local historical dataset, not live market data."
+        "data_source": "Yahoo Finance via yfinance",
+        "note": "Prices are pulled from yfinance and may be delayed."
     })
 
 
 @app.route("/history/<ticker>")
 def get_history(ticker):
-    if not backend_ready():
-        return jsonify({
-            "error": "Backend files are not loaded correctly."
-        }), 500
+    ticker = ticker.upper().strip()
 
-    ticker = ticker.upper()
-    stock_data = get_stock_data(ticker)
+    stock, stock_data = get_yfinance_data(ticker)
 
     if stock_data is None:
         return jsonify({
-            "error": "Ticker not found",
+            "error": "Ticker not found or no data returned from yfinance.",
             "ticker": ticker
         }), 404
 
-    recent_data = stock_data.tail(30)
+    stock_data = stock_data.sort_values("Date").tail(30)
 
     history = []
 
-    for _, row in recent_data.iterrows():
+    for _, row in stock_data.iterrows():
         history.append({
             "date": row["Date"].strftime("%Y-%m-%d"),
             "open": format_price(row["Open"]),
@@ -232,7 +210,8 @@ def get_history(ticker):
         "ticker": ticker,
         "count": len(history),
         "history": history,
-        "note": "Historical data comes from the local dataset, not live market data."
+        "data_source": "Yahoo Finance via yfinance",
+        "note": "Historical prices are pulled from yfinance and may be delayed."
     })
 
 
@@ -240,23 +219,25 @@ def get_history(ticker):
 def predict(ticker):
     if not backend_ready():
         return jsonify({
-            "error": "Backend files are not loaded correctly."
+            "error": "Model files are not loaded correctly."
         }), 500
 
-    ticker = ticker.upper()
-    stock_data = get_stock_data(ticker)
+    ticker = ticker.upper().strip()
+
+    stock, stock_data = get_yfinance_data(ticker)
 
     if stock_data is None:
         return jsonify({
-            "error": "Ticker not found",
+            "error": "Ticker not found or no data returned from yfinance.",
             "ticker": ticker
         }), 404
 
+    stock_data = add_model_features(stock_data)
     latest_row = get_latest_valid_row(stock_data)
 
     if latest_row is None:
         return jsonify({
-            "error": "Not enough clean data to make a prediction",
+            "error": "Not enough recent data to make a prediction.",
             "ticker": ticker
         }), 400
 
@@ -267,18 +248,18 @@ def predict(ticker):
 
     confidence = round(float(max(prediction_proba)) * 100, 2)
 
-    if prediction_number == 1:
-        prediction = "Up"
-    else:
-        prediction = "Down"
+    prediction = "Up" if prediction_number == 1 else "Down"
 
     risk_level, risk_explanation = calculate_risk_level(
         confidence,
         latest_row["Volatility_5"]
     )
 
+    company_name = get_company_name(stock)
+
     return jsonify({
         "ticker": ticker,
+        "company_name": company_name,
         "latest_date": latest_row["Date"].strftime("%Y-%m-%d"),
         "current_price": format_price(latest_row["Close"]),
         "open": format_price(latest_row["Open"]),
@@ -294,15 +275,12 @@ def predict(ticker):
         "confidence": confidence,
         "risk_level": risk_level,
         "risk_explanation": risk_explanation,
-        "explanation": "This prediction is based on recent price movement, moving averages, volume change, and volatility.",
+        "explanation": "This prediction uses recent Yahoo Finance price data and the trained Random Forest stock direction model.",
         "features_used": features,
-        "note": "For educational use only. Not financial advice."
+        "data_source": "Yahoo Finance via yfinance",
+        "note": "For educational use only. Not financial advice. Prices may be delayed."
     })
 
-
-# -----------------------------
-# Run app
-# -----------------------------
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
