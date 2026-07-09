@@ -1,0 +1,119 @@
+/* Shared StockSensei navbar */
+.site-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:28px;
+  min-height:92px;
+  padding:12px clamp(20px, 5vw, 72px);
+  background:linear-gradient(90deg, #8fa8d3, #a9b8d9);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.site-brand{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:#121a2b;
+  flex-shrink:0;
+}
+
+.site-brand-mark{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#f8fbff;
+  box-shadow:0 8px 18px rgba(15, 35, 70, 0.14);
+  overflow:hidden;
+}
+
+.site-brand-mark svg{
+  width:42px;
+  height:42px;
+  display:block;
+}
+
+.site-brand-text{
+  display:flex;
+  align-items:baseline;
+  white-space:nowrap;
+  font-weight:900;
+  font-size:clamp(24px, 2.5vw, 34px);
+  line-height:1;
+  letter-spacing:0;
+  font-style:italic;
+}
+
+.site-brand-text .sensei{
+  color:#2f7df2;
+}
+
+.site-nav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:clamp(18px, 3vw, 42px);
+  flex-wrap:wrap;
+}
+
+.site-nav a,
+.site-nav button{
+  appearance:none;
+  border:0;
+  background:transparent;
+  padding:6px 0;
+  color:#14171f;
+  text-decoration:none;
+  font:inherit;
+  font-size:17px;
+  font-weight:650;
+  cursor:pointer;
+}
+
+.site-nav a.active,
+.site-nav button.active{
+  font-weight:900;
+}
+
+.site-nav a:hover,
+.site-nav button:hover{
+  opacity:.72;
+}
+
+@media (max-width: 760px){
+  .site-header{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:14px;
+    padding:14px 20px 16px;
+  }
+
+  .site-brand-mark{
+    width:50px;
+    height:50px;
+  }
+
+  .site-brand-mark svg{
+    width:36px;
+    height:36px;
+  }
+
+  .site-brand-text{
+    font-size:24px;
+  }
+
+  .site-nav{
+    justify-content:flex-start;
+    gap:12px 18px;
+  }
+
+  .site-nav a,
+  .site-nav button{
+    font-size:15px;
+  }
+}

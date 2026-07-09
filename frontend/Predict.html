@@ -37,60 +37,6 @@
     min-height:100vh;
   }
 
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:28px;
-    padding: 18px clamp(20px, 5vw, 72px);
-    background: linear-gradient(90deg, var(--header-bg-1), var(--header-bg-2));
-    width:100%;
-    position:sticky;
-    top:0;
-    z-index:10;
-  }
-
-  .logo{
-    display:inline-flex;
-    align-items:center;
-    text-decoration:none;
-    flex-shrink:0;
-  }
-
-  .brand-logo{
-    display:block;
-    width:clamp(230px, 28vw, 360px);
-    max-height:86px;
-    object-fit:contain;
-  }
-
-  .brand-blue{
-    color:#2f6fed;
-  }
-
-  nav{
-    display:flex;
-    gap:clamp(18px, 3vw, 42px);
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  nav a{
-    text-decoration:none;
-    color:var(--text-dark);
-    font-size:17px;
-    font-weight:500;
-  }
-
-  nav a:hover{
-    opacity:0.75;
-  }
-
-  nav a.active{
-    font-weight:800;
-  }
-
   main{
     width:min(1180px, calc(100% - 40px));
     margin:0 auto;
@@ -451,21 +397,6 @@
       width:100%;
     }
 
-    header{
-      align-items:flex-start;
-      flex-direction:column;
-      padding:16px 20px;
-    }
-
-    nav{
-      gap:18px;
-      justify-content:flex-start;
-    }
-
-    .brand-logo{
-      width:min(100%, 320px);
-    }
-
     .details-grid{
       grid-template-columns:1fr;
     }
@@ -480,13 +411,6 @@
   }
 
   @media (max-width: 560px){
-    nav{
-      gap:12px 18px;
-    }
-
-    nav a{
-      font-size:15px;
-    }
 
     .search-panel,
     .prediction-body{
@@ -540,16 +464,32 @@
     }
   }
 </style>
+<link rel="stylesheet" href="shared-nav.css">
 </head>
 
 <body>
 
-<header>
-  <a class="logo" href="index.html" aria-label="StockSensei home">
-    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+<header class="site-header">
+  <a class="site-brand" href="index.html" aria-label="StockSensei home">
+    <span class="site-brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" role="img">
+        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
+        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
+        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
+        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
+        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
+        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
+        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
+        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
+        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
+        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
+      </svg>
+    </span>
+    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
   </a>
 
-  <nav>
+  <nav class="site-nav" aria-label="Main navigation">
     <a href="index.html">Home</a>
     <a href="Predict.html" class="active">Predict</a>
     <a href="learn.html">Learn</a>
