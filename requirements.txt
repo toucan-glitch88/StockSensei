@@ -1,5 +1,7 @@
 flask
 flask-cors
 pandas
+joblib
+yfinance
 scikit-learn
-joblibyfinance
+

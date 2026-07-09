@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import pandas as pd
 import joblib
-import yfinance as yf
+import yfinance as yf # type: ignore
 from pathlib import Path
 
 

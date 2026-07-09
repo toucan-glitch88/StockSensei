@@ -3,114 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StockSensei — Learn</title>
+<title>StockSensei - Learn</title>
 <style>
+
   :root{
     --bg:#eef1fb;
-    --header-bg-1:#8fa8d3;
-    --header-bg-2:#a9b8d9;
+    --panel:#ffffff;
+    --ink:#14171f;
+    --muted:#5c6270;
+    --soft:#f7f8fb;
+    --line:#e2e6f2;
+    --blue:#2f7df2;
     --navy:#1b2340;
-    --muted:#6b7488;
-    --white:#ffffff;
+    --green:#1e9e4b;
+    --red:#d93636;
+    --gold:#b8860b;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
 
-  *{ box-sizing:border-box; }
+  *{box-sizing:border-box;}
 
   body{
     margin:0;
     background:var(--bg);
-    color:var(--navy);
+    color:var(--ink);
   }
-
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:28px;
-    padding:14px clamp(20px, 5vw, 72px);
-    background:linear-gradient(90deg, var(--header-bg-1), var(--header-bg-2));
-    position:sticky;
-    top:0;
-    z-index:10;
-  }
-
-  .logo{
-    display:inline-flex;
-    align-items:center;
-    text-decoration:none;
-    flex-shrink:0;
-  }
-
-  .brand-logo{
-    display:block;
-    width:clamp(230px, 28vw, 360px);
-    max-height:86px;
-    object-fit:contain;
-  }
-
-  nav{
-    display:flex;
-    gap:clamp(18px, 3vw, 42px);
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  nav a{
-    text-decoration:none;
-    color:var(--navy);
-    font-size:17px;
-    font-weight:500;
-  }
-
-  nav a.active{ font-weight:800; }
-  nav a:hover{ opacity:0.75; }
 
   main{
-    width:min(900px, calc(100% - 40px));
+    width:min(1180px, calc(100% - 40px));
     margin:0 auto;
-    padding:72px 0;
+    padding:38px 0 64px;
   }
 
-  h1{
-    margin:0 0 12px;
-    font-size:44px;
+  h1,h2,h3,p{margin-top:0;}
+
+  .page-kicker{
+    color:var(--blue);
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:10px;
   }
 
-  p{
-    margin:0;
+  .page-title{
+    color:var(--navy);
+    font-size:clamp(38px, 5vw, 64px);
+    line-height:1;
+    margin-bottom:14px;
+  }
+
+  .page-subtitle{
     color:var(--muted);
     font-size:18px;
     line-height:1.5;
+    max-width:760px;
+    margin-bottom:28px;
   }
 
-  @media (max-width: 700px){
-    header{
-      align-items:flex-start;
-      flex-direction:column;
-      gap:14px;
-      padding:14px 20px;
-    }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 10px 28px rgba(20,23,31,.06);
+  }
 
-    nav{
-      gap:12px 18px;
-      justify-content:flex-start;
-    }
+  .grid{
+    display:grid;
+    gap:22px;
+  }
 
-    nav a{ font-size:15px; }
+  .button{
+    border:0;
+    background:var(--navy);
+    color:#fff;
+    border-radius:10px;
+    padding:12px 16px;
+    font-weight:800;
+    cursor:pointer;
+  }
 
-    .brand-logo{ width:min(100%, 320px); }
+  .button.secondary{
+    background:#edf2fb;
+    color:var(--navy);
+    border:1px solid var(--line);
+  }
+
+  input,select{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    font:inherit;
+    color:var(--ink);
+    background:#fff;
+    outline:none;
+  }
+
+  input:focus,select:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(47,125,242,.14);
+  }
+
+  @media (max-width:760px){
+    main{width:min(100% - 32px, 720px); padding-top:26px;}
+  }
+
+  .lesson-grid{grid-template-columns:1.1fr .9fr; align-items:start;}
+
+  .lesson-list{display:grid; gap:14px;}
+
+  .lesson-card{
+    padding:20px;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:start;
+  }
+
+  .lesson-number{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:#e9f1ff;
+    color:var(--blue);
+    font-weight:900;
+  }
+
+  .lesson-card h2{font-size:20px; margin-bottom:6px; color:var(--navy);}
+  .lesson-card p{color:var(--muted); line-height:1.5; margin-bottom:0;}
+
+  .term-panel{padding:24px; position:sticky; top:118px;}
+  .term-panel h2{font-size:24px; color:var(--navy); margin-bottom:16px;}
+  .term{padding:14px 0; border-top:1px solid var(--line);}
+  .term:first-of-type{border-top:0;}
+  .term strong{display:block; color:var(--ink); margin-bottom:4px;}
+  .term span{color:var(--muted); font-size:14px; line-height:1.45;}
+
+  .quiz{margin-top:24px; padding:22px;}
+  .quiz h2{font-size:22px; color:var(--navy); margin-bottom:10px;}
+  .quiz-options{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
+  .quiz-options button{border:1px solid var(--line); background:#fff; border-radius:999px; padding:10px 14px; font-weight:750; cursor:pointer;}
+  #quiz-result{margin-top:12px; color:var(--muted); font-weight:700;}
+
+  @media (max-width:900px){
+    .lesson-grid{grid-template-columns:1fr;}
+    .term-panel{position:static;}
   }
 </style>
+<link rel="stylesheet" href="shared-nav.css">
 </head>
 <body>
-<header>
-  <a class="logo" href="index.html" aria-label="StockSensei home">
-    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+<header class="site-header">
+  <a class="site-brand" href="index.html" aria-label="StockSensei home">
+    <span class="site-brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" role="img">
+        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
+        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
+        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
+        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
+        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
+        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
+        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
+        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
+        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
+        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
+      </svg>
+    </span>
+    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
   </a>
 
-  <nav>
+  <nav class="site-nav" aria-label="Main navigation">
     <a href="index.html">Home</a>
     <a href="Predict.html">Predict</a>
     <a href="learn.html" class="active">Learn</a>
@@ -121,8 +187,73 @@
 </header>
 
 <main>
-  <h1>Learn</h1>
-  <p>Stock lessons and investing basics can go here.</p>
+  <div class="page-kicker">Learn the basics</div>
+  <h1 class="page-title">Understand stocks before you predict them.</h1>
+  <p class="page-subtitle">Quick beginner-friendly lessons that explain the numbers StockSensei uses on the prediction page.</p>
+
+  <section class="grid lesson-grid">
+    <div class="lesson-list">
+      <article class="panel lesson-card">
+        <div class="lesson-number">1</div>
+        <div>
+          <h2>What a stock price means</h2>
+          <p>A stock price is what buyers and sellers agree one share is worth right now. It moves as people react to earnings, news, rates, and market sentiment.</p>
+        </div>
+      </article>
+
+      <article class="panel lesson-card">
+        <div class="lesson-number">2</div>
+        <div>
+          <h2>Why moving averages matter</h2>
+          <p>Moving averages smooth out daily noise. A 5-day average reacts faster, while a 10-day average gives a steadier view of short-term trend direction.</p>
+        </div>
+      </article>
+
+      <article class="panel lesson-card">
+        <div class="lesson-number">3</div>
+        <div>
+          <h2>Volume shows participation</h2>
+          <p>Volume is how many shares traded. Big moves with high volume can signal stronger interest than the same move on quiet trading.</p>
+        </div>
+      </article>
+
+      <article class="panel lesson-card">
+        <div class="lesson-number">4</div>
+        <div>
+          <h2>Predictions are not guarantees</h2>
+          <p>The model estimates a likely next direction from recent features. It can be useful for learning, but it should not be treated as financial advice.</p>
+        </div>
+      </article>
+    </div>
+
+    <aside class="panel term-panel">
+      <h2>Key Terms</h2>
+      <div class="term"><strong>Open</strong><span>The first price traded during the market day.</span></div>
+      <div class="term"><strong>High / Low</strong><span>The highest and lowest price reached during the selected period.</span></div>
+      <div class="term"><strong>Daily Return</strong><span>The percentage change from one close to the next close.</span></div>
+      <div class="term"><strong>Volatility</strong><span>How much the price has been moving around recently.</span></div>
+      <div class="term"><strong>Confidence</strong><span>How strongly the model chose its predicted direction.</span></div>
+    </aside>
+  </section>
+
+  <section class="panel quiz">
+    <h2>Mini Check</h2>
+    <p>Which metric tells you how many shares traded?</p>
+    <div class="quiz-options">
+      <button onclick="checkQuiz(false)">Moving Average</button>
+      <button onclick="checkQuiz(true)">Volume</button>
+      <button onclick="checkQuiz(false)">Open Price</button>
+    </div>
+    <div id="quiz-result"></div>
+  </section>
 </main>
+
+<script>
+  function checkQuiz(correct){
+    document.getElementById("quiz-result").textContent = correct
+      ? "Correct. Volume shows trading activity."
+      : "Not quite. The answer is volume.";
+  }
+</script>
 </body>
 </html>
