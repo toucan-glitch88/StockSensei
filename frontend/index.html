@@ -9,7 +9,7 @@
 
 <style>
   :root{
-    --navy:#0f2a4a;
+    --navy:#1b2340;
     --blue:#3b6fd4;
     --blue-light:#eaf0fc;
     --bg:#eef1fb;
@@ -37,58 +37,49 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:16px 40px;
-    background:linear-gradient(90deg,#7f9ac9,#a9b8d9);
+    gap:28px;
+    padding:14px clamp(20px, 5vw, 72px);
+    background: linear-gradient(90deg, #8fa8d3, #a9b8d9);
+    position:sticky;
+    top:0;
+    z-index:10;
   }
 
   .logo{
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    gap:10px;
-    font-weight:800;
-    font-size:18px;
-    color:var(--navy);
-    letter-spacing:0.5px;
+    text-decoration:none;
+    flex-shrink:0;
   }
 
-  .logo-icon{
-    width:34px;
-    height:34px;
-    background:var(--navy);
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    font-size:16px;
+  .brand-logo{
+    display:block;
+    width:clamp(230px, 28vw, 360px);
+    max-height:86px;
+    object-fit:contain;
   }
 
   nav{
     display:flex;
-    gap:32px;
+    gap:clamp(18px, 3vw, 42px);
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:flex-end;
   }
 
-  nav button{
-    background:none;
-    border:none;
-    font-size:15px;
-    font-weight:600;
-    color:var(--navy);
-    cursor:pointer;
-    padding:6px 4px;
-    border-bottom:2px solid transparent;
+  nav a{
+    text-decoration:none;
+    color: var(--navy);
+    font-size:17px;
+    font-weight:500;
+    padding:4px 2px;
   }
 
-  nav button:hover{
-    border-bottom-color:var(--navy);
+  nav a.active{
+    font-weight:700;
   }
 
-  .avatar{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    background:#4a4a4a;
-  }
+  nav a:hover{ opacity:0.85; }
 
   main{
     max-width:1200px;
@@ -389,14 +380,19 @@
     }
 
     header{
+      align-items:flex-start;
+      flex-direction:column;
+      gap:14px;
       padding:14px 20px;
-      flex-wrap:wrap;
-      gap:10px;
     }
 
     nav{
       gap:16px;
-      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    .brand-logo{
+      width:min(100%, 320px);
     }
 
     .hero h1{
@@ -413,21 +409,19 @@
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">📈</div>
-    STOCK SENSEI
-  </div>
+  <a class="logo" href="index.html" aria-label="StockSensei home">
+    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+  </a>
 
   <nav>
-    <button onclick="sendPrompt('Go to Home')">Home</button>
-    <button onclick="sendPrompt('Go to Predict')">Predict</button>
-    <button onclick="sendPrompt('Go to Learn')">Learn</button>
-    <button onclick="sendPrompt('Go to Watchlist')">Watchlist</button>
-    <button onclick="sendPrompt('Go to Explore')">Explore</button>
-    <button onclick="sendPrompt('Go to About Us')">About Us</button>
-  </nav>
+  <a href="index.html" class="active">Home</a>
+  <a href="Predict.html">Predict</a>
+  <a href="learn.html">Learn</a>
+  <a href="watchlist.html">Watchlist</a>
+  <a href="explore.html">Explore</a>
+  <a href="About.html">About Us</a>
+</nav>
 
-  <div class="avatar"></div>
 </header>
 
 <main>
@@ -440,7 +434,7 @@
     </div>
 
     <div class="quick-links">
-      <button class="predict-btn" onclick="getPrediction()">
+      <button class="predict-btn" type="button" onclick="getPrediction()">
         <span class="icon">📈</span>
         <span>
           <div class="label">Predict</div>
@@ -517,8 +511,19 @@
 </div>
 
 <script>
+const API_BASES = ["http://127.0.0.1:5000", "http://localhost:5000"];
+
 function sendPrompt(message) {
-  console.log(message);
+  const routes = {
+    "Open Watchlist": "watchlist.html",
+    "Open Explore": "explore.html",
+    "Open Learn": "learn.html"
+  };
+
+  const target = routes[message];
+  if (target) {
+    window.location.href = target;
+  }
 }
 
 async function getPrediction() {
@@ -542,20 +547,15 @@ async function getPrediction() {
     </div>
   `;
 
-  try {
-    const response = await fetch("http://127.0.0.1:5000/predict/" + ticker);
-    const data = await response.json();
+  let lastError = "Could not connect to backend. Make sure Flask is running on port 5000.";
 
-    if (!response.ok) {
-      resultBox.innerHTML = `
-        <div class="result-card">
-          <p>${data.error}</p>
-        </div>
-      `;
-      return;
-    }
+  for (const base of API_BASES) {
+    try {
+      const response = await fetch(base + "/predict/" + ticker);
+      const data = await response.json();
 
-    resultBox.innerHTML = `
+      if (response.ok) {
+        resultBox.innerHTML = `
   <div class="result-card">
     <h3>${data.ticker}</h3>
 
@@ -577,25 +577,32 @@ async function getPrediction() {
   </div>
 `;
 
-    document.getElementById("chart-ticker").textContent = data.ticker;
+        document.getElementById("chart-ticker").textContent = data.ticker;
 
-    const badge = document.getElementById("prediction-badge");
+        const badge = document.getElementById("prediction-badge");
 
-    if (data.prediction === "Up") {
-      badge.textContent = "AI Prediction: Bullish ↑";
-      badge.className = "prediction-badge";
-    } else {
-      badge.textContent = "AI Prediction: Bearish ↓";
-      badge.className = "prediction-badge bearish";
+        if (data.prediction === "Up") {
+          badge.textContent = "AI Prediction: Bullish ↑";
+          badge.className = "prediction-badge";
+        } else {
+          badge.textContent = "AI Prediction: Bearish ↓";
+          badge.className = "prediction-badge bearish";
+        }
+
+        return;
+      }
+
+      lastError = data.error || `Request failed with ${response.status}`;
+    } catch (error) {
+      lastError = `Could not connect to backend at ${base}.`;
     }
-
-  } catch (error) {
-    resultBox.innerHTML = `
-      <div class="result-card">
-        <p>Could not connect to backend. Make sure Flask is running.</p>
-      </div>
-    `;
   }
+
+  resultBox.innerHTML = `
+    <div class="result-card">
+      <p>${lastError}</p>
+    </div>
+  `;
 }
 
 function generateSeries(range){
@@ -697,6 +704,12 @@ function renderChart(range){
     }
   });
 }
+
+document.getElementById("ticker-input").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    getPrediction();
+  }
+});
 
 document.getElementById("range-buttons").addEventListener("click", function(e) {
   const btn = e.target.closest("button");

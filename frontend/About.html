@@ -33,40 +33,37 @@
 
   /* ---------- HEADER (shared with main site) ---------- */
   header{
-    display:grid;
-    grid-template-columns: 1fr auto 1fr;
+    display:flex;
     align-items:center;
-    padding: 18px 40px;
+    justify-content:space-between;
+    gap:28px;
+    padding:14px clamp(20px, 5vw, 72px);
     background: linear-gradient(90deg, var(--header-bg-1), var(--header-bg-2));
+    position:sticky;
+    top:0;
+    z-index:10;
   }
 
   .logo{
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    gap:10px;
-    font-weight:800;
-    font-size: 22px;
-    color: var(--navy);
-    letter-spacing: 0.5px;
+    text-decoration:none;
+    flex-shrink:0;
   }
 
-  .logo-icon{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background: var(--white);
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  .brand-logo{
+    display:block;
+    width:clamp(230px, 28vw, 360px);
+    max-height:86px;
+    object-fit:contain;
   }
-
-  .logo .brand-blue{ color:#2f6fed; }
 
   nav{
     display:flex;
-    gap:36px;
-    grid-column: 2;
-    justify-self: center;
+    gap:clamp(18px, 3vw, 42px);
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:flex-end;
   }
 
   nav a{
@@ -80,15 +77,6 @@
 
   nav a.active{
     font-weight: 700;
-  }
-
-  .avatar{
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:#5b5b5b;
-    flex-shrink:0;
-    justify-self:end;
   }
 
   /* ---------- HERO ---------- */
@@ -297,6 +285,24 @@
   }
 
   @media (max-width: 640px){
+    header{
+      align-items:flex-start;
+      flex-direction:column;
+      gap:14px;
+      padding:14px 20px;
+    }
+
+    nav{
+      gap:16px;
+      justify-content:flex-start;
+    }
+
+    nav a{ font-size:15px; }
+
+    .brand-logo{
+      width:min(100%, 320px);
+    }
+
     .team-grid{ grid-template-columns: 1fr; }
     .mission-card{ flex-direction:column; text-align:center; }
     .hero h1{ font-size: 38px; }
@@ -306,38 +312,19 @@
 <body>
 
 <header>
-  <div class="logo">
-    <span class="logo-icon">
-      <svg width="30" height="30" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="22.5" fill="#ffffff" stroke="#2f6fed" stroke-width="1.4"/>
-        <clipPath id="badgeClip"><circle cx="24" cy="24" r="21.5"/></clipPath>
-        <g clip-path="url(#badgeClip)">
-          <polyline points="4,34 11,27 16,31 21,21 26,27 32,17 38,23 45,18"
-                    fill="none" stroke="#2f6fed" stroke-width="1.4" opacity="0.35"/>
-          <line x1="9" y1="13" x2="37" y2="41" stroke="#14171f" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
-          <path d="M17 27 L31 27 L38 43 L10 43 Z" fill="#2f6fed"/>
-          <path d="M14 36 L34 36 L32 40 L16 40 Z" fill="#1c3fb0"/>
-          <path d="M17 23 C17 33 31 33 31 23 C29 29 19 29 17 23 Z" fill="#f5f5f5"/>
-          <circle cx="24" cy="19" r="6" fill="#2f6fed"/>
-          <circle cx="21.7" cy="18.5" r="0.9" fill="#0d1220"/>
-          <circle cx="26.3" cy="18.5" r="0.9" fill="#0d1220"/>
-          <path d="M24 5 L15.5 21 C20 19 28 19 32.5 21 Z" fill="#14171f"/>
-          <circle cx="24" cy="5" r="1.5" fill="#14171f"/>
-          <circle cx="26" cy="30" r="2.1" fill="#14171f"/>
-        </g>
-      </svg>
-    </span>
-    <span>STOCK<span class="brand-blue">SENSEI</span></span>
-  </div>
+  <a class="logo" href="index.html" aria-label="StockSensei home">
+    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+  </a>
+
   <nav>
   <a href="index.html">Home</a>
-  <a href="predict.html">Predict</a>
-  <a href="#">Learn</a>
-  <a href="#">Watchlist</a>
-  <a href="#">Explore</a>
-  <a href="about.html" class="active">About Us</a>
+  <a href="Predict.html">Predict</a>
+  <a href="learn.html">Learn</a>
+  <a href="watchlist.html">Watchlist</a>
+  <a href="explore.html">Explore</a>
+  <a href="About.html" class="active">About Us</a>
 </nav>
-  <div class="avatar"></div>
+
 </header>
 
 <section class="hero">
