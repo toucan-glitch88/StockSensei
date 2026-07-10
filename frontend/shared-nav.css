@@ -1,4 +1,4 @@
-/* Shared StockSensei navbar */
+/* Shared StockSensei navbar + footer */
 .site-header{
   display:flex;
   align-items:center;
@@ -49,9 +49,7 @@
   font-style:italic;
 }
 
-.site-brand-text .sensei{
-  color:#2f7df2;
-}
+.site-brand-text .sensei{ color:#2f7df2; }
 
 .site-nav{
   display:flex;
@@ -76,13 +74,46 @@
 }
 
 .site-nav a.active,
-.site-nav button.active{
-  font-weight:900;
-}
+.site-nav button.active{ font-weight:900; }
 
 .site-nav a:hover,
-.site-nav button:hover{
-  opacity:.72;
+.site-nav button:hover{ opacity:.72; }
+
+.site-footer{
+  margin-top:54px;
+  background:#10182b;
+  color:#fff;
+}
+
+.site-footer-inner{
+  width:min(1180px, calc(100% - 40px));
+  margin:0 auto;
+  padding:26px 0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.site-footer strong{
+  display:block;
+  margin-bottom:6px;
+  font-size:15px;
+}
+
+.site-footer p{
+  margin:0;
+  max-width:760px;
+  color:rgba(255,255,255,.72);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.site-footer-copy{
+  white-space:nowrap;
+  color:rgba(255,255,255,.78);
+  font-size:13px;
+  font-weight:700;
 }
 
 @media (max-width: 760px){
@@ -103,9 +134,7 @@
     height:36px;
   }
 
-  .site-brand-text{
-    font-size:24px;
-  }
+  .site-brand-text{ font-size:24px; }
 
   .site-nav{
     justify-content:flex-start;
@@ -113,7 +142,8 @@
   }
 
   .site-nav a,
-  .site-nav button{
-    font-size:15px;
-  }
+  .site-nav button{ font-size:15px; }
+
+  .site-footer-inner{ flex-direction:column; }
+  .site-footer-copy{ white-space:normal; }
 }
