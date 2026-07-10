@@ -463,6 +463,47 @@
       padding:14px 22px;
     }
   }
+  .expanded-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,14,24,.62);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:200;
+  }
+
+  .expanded-overlay.open{ display:flex; }
+
+  .expanded-modal{
+    width:min(980px, 100%);
+    max-height:88vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 24px 80px rgba(0,0,0,.28);
+    padding:24px;
+  }
+
+  .expanded-modal-header{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    align-items:flex-start;
+    border-bottom:1px solid var(--border);
+    padding-bottom:14px;
+    margin-bottom:18px;
+  }
+
+  .expanded-modal h2{ margin:0; font-size:30px; }
+  .expanded-close{ border:0; background:#f1f3f7; border-radius:999px; padding:10px 14px; font-weight:900; cursor:pointer; }
+  .expanded-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  .expanded-stat{ background:#f7f8fb; border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .expanded-stat span{ display:block; color:var(--text-mid); font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:6px; }
+  .expanded-stat strong{ font-size:18px; }
+
+  @media (max-width:700px){ .expanded-grid{ grid-template-columns:1fr; } }
 </style>
 <link rel="stylesheet" href="shared-nav.css">
 </head>
@@ -509,9 +550,21 @@
 
     <div class="search-box">
       <span>🔍</span>
-      <input id="stock-search" type="text" placeholder="Enter ticker, like AAPL or TSLA">
+      <input id="stock-search" type="text" placeholder="Search company or ticker, like Apple or AAPL" list="company-options">
       <button onclick="searchStock()">Search</button>
     </div>
+    <datalist id="company-options">
+        <option value="Apple Inc. (AAPL)">
+        <option value="Microsoft (MSFT)">
+        <option value="NVIDIA (NVDA)">
+        <option value="Tesla (TSLA)">
+        <option value="Alphabet (GOOGL)">
+        <option value="Amazon (AMZN)">
+        <option value="Meta (META)">
+        <option value="JPMorgan Chase (JPM)">
+        <option value="Advanced Micro Devices (AMD)">
+        <option value="Micron Technology (MU)">
+    </datalist>
 
     <div class="status-message" id="status-message">
       Start by searching a ticker. Make sure the Flask backend is running on port 5000.
@@ -541,7 +594,7 @@
 
   <section class="prediction-panel">
     <div class="stock-header">
-      <button class="expand-btn" onclick="alert('Expanded view coming soon')">Expand View</button>
+      <button class="expand-btn" onclick="openExpandedView()">Expand View</button>
 
       <div class="stock-header-top">
         <div class="stock-logo-circle" id="selected-logo">?</div>
@@ -612,12 +665,70 @@
 
 </main>
 
-<div class="bottom-label">
-  <span>Prediction Market</span>
+<div class="expanded-overlay" id="expanded-overlay" onclick="closeExpandedView(event)">
+  <div class="expanded-modal" role="dialog" aria-modal="true" aria-labelledby="expanded-title">
+    <div class="expanded-modal-header">
+      <div>
+        <h2 id="expanded-title">Expanded View</h2>
+        <p class="company-full" id="expanded-subtitle">Search a ticker to load the full analysis.</p>
+      </div>
+      <button class="expanded-close" onclick="closeExpandedView()">Close</button>
+    </div>
+    <div class="expanded-grid">
+      <div class="expanded-stat"><span>Ticker</span><strong id="expanded-ticker">--</strong></div>
+      <div class="expanded-stat"><span>Price</span><strong id="expanded-price">--</strong></div>
+      <div class="expanded-stat"><span>Prediction</span><strong id="expanded-prediction">Waiting</strong></div>
+      <div class="expanded-stat"><span>Confidence</span><strong id="expanded-confidence">--%</strong></div>
+      <div class="expanded-stat"><span>Risk</span><strong id="expanded-risk">--</strong></div>
+      <div class="expanded-stat"><span>Daily Return</span><strong id="expanded-return">--</strong></div>
+    </div>
+    <p class="fine-print" id="expanded-risk-text">Risk explanation will appear here after a stock loads.</p>
+  </div>
 </div>
+
 
 <script>
   const API_BASE = "http://127.0.0.1:5000";
+  const COMPANY_TO_TICKER = {
+    "AAPL": "AAPL",
+    "APPLE INC.": "AAPL",
+    "APPLE": "AAPL",
+    "MSFT": "MSFT",
+    "MICROSOFT": "MSFT",
+    "MICROSOFT CORPORATION": "MSFT",
+    "NVDA": "NVDA",
+    "NVIDIA": "NVDA",
+    "NVIDIA": "NVDA",
+    "TSLA": "TSLA",
+    "TESLA": "TSLA",
+    "TESLA INC.": "TSLA",
+    "GOOGL": "GOOGL",
+    "ALPHABET": "GOOGL",
+    "GOOGLE": "GOOGL",
+    "AMZN": "AMZN",
+    "AMAZON": "AMZN",
+    "AMAZON.COM": "AMZN",
+    "META": "META",
+    "META": "META",
+    "FACEBOOK": "META",
+    "JPM": "JPM",
+    "JPMORGAN CHASE": "JPM",
+    "JPMORGAN": "JPM",
+    "AMD": "AMD",
+    "ADVANCED MICRO DEVICES": "AMD",
+    "AMD": "AMD",
+    "MU": "MU",
+    "MICRON TECHNOLOGY": "MU",
+    "MICRON": "MU"
+  };
+
+  function resolveTicker(value) {
+    const raw = value.trim();
+    const paren = raw.match(/\(([A-Z]{1,6})\)/);
+    if (paren) return paren[1];
+    const key = raw.toUpperCase();
+    return COMPANY_TO_TICKER[key] || key.replace(/[^A-Z.]/g, "");
+  }
 
   function money(value) {
     if (value === null || value === undefined || Number.isNaN(Number(value))) {
@@ -651,10 +762,10 @@
 
   async function searchStock() {
     const input = document.getElementById("stock-search");
-    const ticker = input.value.trim().toUpperCase();
+    const ticker = resolveTicker(input.value);
 
     if (!ticker) {
-      alert("Please enter a stock ticker like AAPL or TSLA.");
+      alert("Please enter a company or ticker like Apple or AAPL.");
       return;
     }
 
@@ -773,12 +884,20 @@
     const confidenceFill = document.getElementById("confidence-fill");
     const confidencePercent = document.getElementById("confidence-percent");
 
+    syncExpandedView();
+
     if (data.prediction === "Up") {
       predictionCard.style.background = "#e7f6ec";
       predictionValue.style.color = "#1e9e4b";
       predictionIcon.textContent = "📈";
       confidenceFill.style.background = "#1e9e4b";
       confidencePercent.style.color = "#1e9e4b";
+    } else if (data.prediction === "Uncertain") {
+      predictionCard.style.background = "#f7f8fb";
+      predictionValue.style.color = "#14171f";
+      predictionIcon.textContent = "⚖️";
+      confidenceFill.style.background = "#8b909c";
+      confidencePercent.style.color = "#14171f";
     } else {
       predictionCard.style.background = "#fbe9e8";
       predictionValue.style.color = "#d93636";
@@ -874,7 +993,46 @@
       searchStock();
     }
   });
+  function syncExpandedView() {
+    const byId = id => document.getElementById(id);
+    if (!byId("expanded-ticker")) return;
+    byId("expanded-title").textContent = byId("selected-ticker").textContent + " Expanded View";
+    byId("expanded-subtitle").textContent = byId("selected-company").textContent;
+    byId("expanded-ticker").textContent = byId("selected-ticker").textContent;
+    byId("expanded-price").textContent = byId("selected-price").textContent;
+    byId("expanded-prediction").textContent = byId("prediction-value").textContent;
+    byId("expanded-confidence").textContent = byId("confidence-percent").textContent;
+    byId("expanded-risk").textContent = byId("risk-level").textContent;
+    byId("expanded-return").textContent = byId("daily-return").textContent;
+    byId("expanded-risk-text").textContent = byId("risk-explanation").textContent;
+  }
+
+  function openExpandedView() {
+    syncExpandedView();
+    document.getElementById("expanded-overlay").classList.add("open");
+  }
+
+  function closeExpandedView(event) {
+    if (event && event.target.id !== "expanded-overlay") return;
+    document.getElementById("expanded-overlay").classList.remove("open");
+  }
+
+  const initialParams = new URLSearchParams(window.location.search);
+  const initialTicker = initialParams.get("ticker");
+  if (initialTicker) {
+    document.getElementById("stock-search").value = initialTicker;
+    selectStock(resolveTicker(initialTicker));
+  }
 </script>
 
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <strong>Education Only Disclaimer</strong>
+      <p>StockSensei is an educational stock analysis tool. Model outputs, sample charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
+    </div>
+    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
+  </div>
+</footer>
 </body>
 </html>

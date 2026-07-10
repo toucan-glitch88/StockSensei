@@ -15,6 +15,36 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "models" / "stock_direction_model.pkl"
 FEATURES_PATH = BASE_DIR / "models" / "features.pkl"
 
+SYMBOL_ALIASES = {
+    "APPLE": "AAPL",
+    "APPLE INC": "AAPL",
+    "MICROSOFT": "MSFT",
+    "MICROSOFT CORPORATION": "MSFT",
+    "NVIDIA": "NVDA",
+    "NVIDIA CORPORATION": "NVDA",
+    "TESLA": "TSLA",
+    "TESLA INC": "TSLA",
+    "GOOGLE": "GOOGL",
+    "ALPHABET": "GOOGL",
+    "AMAZON": "AMZN",
+    "AMAZON.COM": "AMZN",
+    "META": "META",
+    "FACEBOOK": "META",
+    "JPMORGAN": "JPM",
+    "JPMORGAN CHASE": "JPM",
+    "AMD": "AMD",
+    "ADVANCED MICRO DEVICES": "AMD",
+    "MICRON": "MU",
+    "MICRON TECHNOLOGY": "MU",
+}
+
+
+def resolve_symbol(query):
+    clean = query.upper().strip()
+    if clean in SYMBOL_ALIASES:
+        return SYMBOL_ALIASES[clean]
+    return "".join(ch for ch in clean if ch.isalpha() or ch == ".")
+
 
 try:
     model = joblib.load(MODEL_PATH)
@@ -54,7 +84,7 @@ def calculate_risk_level(confidence, volatility):
 
 
 def get_yfinance_data(ticker):
-    ticker = ticker.upper().strip()
+    ticker = resolve_symbol(ticker)
 
     stock = yf.Ticker(ticker)
 
@@ -133,6 +163,15 @@ def health():
     })
 
 
+@app.route("/resolve/<query>")
+def resolve_query(query):
+    ticker = resolve_symbol(query)
+    return jsonify({
+        "query": query,
+        "ticker": ticker
+    })
+
+
 @app.route("/live/<ticker>")
 def live_summary(ticker):
     if not backend_ready():
@@ -140,7 +179,7 @@ def live_summary(ticker):
             "error": "Model files are not loaded correctly."
         }), 500
 
-    ticker = ticker.upper().strip()
+    ticker = resolve_symbol(ticker)
 
     stock, stock_data = get_yfinance_data(ticker)
 
@@ -182,7 +221,7 @@ def live_summary(ticker):
 
 @app.route("/history/<ticker>")
 def get_history(ticker):
-    ticker = ticker.upper().strip()
+    ticker = resolve_symbol(ticker)
 
     stock, stock_data = get_yfinance_data(ticker)
 
@@ -222,7 +261,7 @@ def predict(ticker):
             "error": "Model files are not loaded correctly."
         }), 500
 
-    ticker = ticker.upper().strip()
+    ticker = resolve_symbol(ticker)
 
     stock, stock_data = get_yfinance_data(ticker)
 
@@ -249,6 +288,9 @@ def predict(ticker):
     confidence = round(float(max(prediction_proba)) * 100, 2)
 
     prediction = "Up" if prediction_number == 1 else "Down"
+    calibrated_prediction = prediction
+    if confidence < 55:
+        calibrated_prediction = "Uncertain"
 
     risk_level, risk_explanation = calculate_risk_level(
         confidence,
@@ -271,11 +313,12 @@ def predict(ticker):
         "moving_average_10": format_price(latest_row["MA_10"]),
         "volume_change_percent": format_percent(latest_row["Volume_Change"]),
         "volatility_5": format_price(latest_row["Volatility_5"]),
-        "prediction": prediction,
+        "prediction": calibrated_prediction,
+        "raw_model_prediction": prediction,
         "confidence": confidence,
         "risk_level": risk_level,
         "risk_explanation": risk_explanation,
-        "explanation": "This prediction uses recent Yahoo Finance price data and the trained Random Forest stock direction model.",
+        "explanation": "This prediction uses recent Yahoo Finance price data and the trained Random Forest stock direction model. Low-confidence outputs are shown as Uncertain to avoid overstating the model.",
         "features_used": features,
         "data_source": "Yahoo Finance via yfinance",
         "note": "For educational use only. Not financial advice. Prices may be delayed."
