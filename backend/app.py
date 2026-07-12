@@ -4,10 +4,20 @@ import pandas as pd
 import joblib
 import yfinance as yf # type: ignore
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+from supabase import create_client
 
 
 app = Flask(__name__)
 CORS(app)
+
+load_dotenv()
+
+supabase = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_SECRET_KEY")
+)
 
 
 BASE_DIR = Path(__file__).resolve().parent
