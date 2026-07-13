@@ -131,6 +131,13 @@
 </style>
 <link rel="stylesheet" href="shared-nav.css">
 </head>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+<script src="session.js"></script>
+
 <body>
 <header class="site-header">
   <a class="site-brand" href="index.html" aria-label="StockSensei home">
@@ -153,12 +160,14 @@
   </a>
 
   <nav class="site-nav" aria-label="Main navigation">
-    <a href="index.html">Home</a>
+    <a href="index.html" class="active">Home</a>
     <a href="Predict.html">Predict</a>
     <a href="learn.html">Learn</a>
-    <a href="watchlist.html" class="active">Watchlist</a>
+    <a href="watchlist.html">Watchlist</a>
     <a href="explore.html">Explore</a>
     <a href="About.html">About Us</a>
+
+    <div id="userArea"></div>
   </nav>
 </header>
 <main>
