@@ -4,7 +4,6 @@ const publicPages = new Set([
     "login.html",
     "about.html",
     "learn.html",
-    "explore.html"
 ]);
 
 
