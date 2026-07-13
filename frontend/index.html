@@ -342,33 +342,8 @@
 <body>
 
 <header class="site-header">
-  <a class="site-brand" href="index.html" aria-label="StockSensei home">
-    <span class="site-brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 64 64" role="img">
-        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
-        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
-        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
-        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
-        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
-        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
-        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
-        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
-        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
-        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
-        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
-      </svg>
-    </span>
-    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
-  </a>
-
-  <nav class="site-nav" aria-label="Main navigation">
-    <a href="index.html" class="active">Home</a>
-    <a href="Predict.html">Predict</a>
-    <a href="learn.html">Learn</a>
-    <a href="watchlist.html">Watchlist</a>
-    <a href="explore.html">Explore</a>
-    <a href="About.html">About Us</a>
-  </nav>
+  <a class="site-brand" href="index.html" aria-label="StockSensei home"><span class="site-brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" role="img"><path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/><path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/><path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/><path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/><path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/><path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/><path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/><path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/><path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/><path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/><path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/></svg></span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
+  <nav class="site-nav" aria-label="Main navigation"><a href="index.html" class="active">Home</a><a href="Predict.html">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a></nav>
 </header>
 <main>
   <section class="hero">
@@ -411,5 +386,9 @@ function renderForecast(data){document.getElementById("chart-ticker").textConten
  if(chart)chart.destroy();chart=new Chart(document.getElementById("stockChart"),{type:"line",data:{labels,datasets:[{label:"Upper confidence",data:upper,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:"+1",tension:.22},{label:"Lower confidence",data:lower,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:false,tension:.22},{label:"Actual close",data:actual,borderColor:"#1f9d55",backgroundColor:"rgba(31,157,85,.08)",pointRadius:1.5,borderWidth:2,tension:.22},{label:"Forecast",data:forecast,borderColor:"#3b6fd4",borderDash:[6,5],pointRadius:2,borderWidth:2,tension:.22}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.parsed.y)}}},scales:{x:{grid:{display:false},title:{display:true,text:"Date",color:"#6b7488",font:{weight:"700"}},ticks:{maxTicksLimit:8}},y:{position:"right",grid:{color:"#eef1f6"},title:{display:true,text:"Price (USD)",color:"#6b7488",font:{weight:"700"}},ticks:{callback:v=>"$"+Number(v).toLocaleString()}}}}})}
 window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="session.js"></script>
 </body>
 </html>

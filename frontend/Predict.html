@@ -26,15 +26,38 @@
 </head>
 <body>
 <header class="site-header">
-  <a class="site-brand" href="index.html" aria-label="StockSensei home"><span class="site-brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" role="img"><path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/><path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/><path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/><path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/><path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/><path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/><path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/><path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/><path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/><path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/><path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/></svg></span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
-  <nav class="site-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="Predict.html" class="active">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a></nav>
+  <a class="site-brand" href="index.html" aria-label="StockSensei home"><span class="site-brand-mark" aria-hidden="true">
+      <svg class="stocksensei-logo-svg" viewBox="0 0 64 64" role="img">
+        <g class="logo-candles">
+          <path d="M9 19v28" />
+          <rect x="6" y="25" width="7" height="15" rx="1.5" />
+          <path d="M19 11v36" />
+          <rect x="16" y="18" width="7" height="22" rx="1.5" />
+          <path d="M55 17v30" />
+          <rect x="51.5" y="22" width="7" height="19" rx="1.5" />
+        </g>
+        <path class="logo-swoosh" d="M10 49c10 7 33 7 44 0" />
+        <g class="logo-sensei">
+          <path class="logo-robe" d="M15 49c4-15 10-24 17-27 8 3 14 12 17 27-9 7-25 7-34 0Z" />
+          <path class="logo-robe-accent" d="M19 49c4-10 8-17 13-20 5 3 10 10 14 20-8 4-19 4-27 0Z" />
+          <path class="logo-face" d="M20 31c4-8 8-12 12-12s9 4 13 12c-6 6-19 6-25 0Z" />
+          <path class="logo-beard" d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" />
+          <path class="logo-hair" d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" />
+          <path class="logo-bun" d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" />
+          <path class="logo-features" d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" />
+        </g>
+        <path class="logo-sparkline" d="M7 45 L17 45 L24 35 L31 39 L39 25 L47 30 L57 16" />
+      </svg>
+    </span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
+  <nav class="site-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="Predict.html" class="active">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a>  <div id="userArea"></div>
+  </nav>
 </header>
 <main>
   <section class="panel search-panel">
     <h1>Search a Stock</h1><p class="subtitle">Search a company or ticker. The backend uses yfinance for actual price history, then adds direction prediction plus a future time-series forecast.</p>
     <div class="search-area"><div class="search-box"><input id="stock-search" type="text" placeholder="Search Apple, NVDA, Tesla, Spotify..."><button onclick="searchStock()">Search</button></div><div class="search-results" id="search-results"></div></div>
     <p class="mini-note" id="status-message"><strong>Ready:</strong> Start by searching. Make sure Flask is running on port 5000.</p>
-    <div class="mini-note"><strong>What changed:</strong> no fixed stock list. Search results come from yfinance, forecasts use actual historical close prices, and the chart shows future confidence intervals.</div>
+    
   </section>
   <section class="panel prediction-panel">
     <div class="stock-header"><div><div class="stock-title"><div class="stock-logo" id="selected-logo">?</div><div><h2 id="selected-ticker">Select</h2><p class="company-full" id="selected-company">Search a stock to load live data</p></div></div><div class="price" id="selected-price">$--</div><div class="date-line" id="selected-date">Waiting for ticker</div></div><button class="expand-btn" onclick="openExpandedView()">Expand View</button></div>
@@ -67,5 +90,9 @@ function syncExpandedView(){const g=id=>document.getElementById(id);g("expanded-
 function openExpandedView(){syncExpandedView();document.getElementById("expanded-overlay").classList.add("open");setTimeout(()=>{if(!lastForecastData)return;if(expandedChart)expandedChart.destroy();expandedChart=new Chart(document.getElementById("expandedChart"),chartConfig(lastForecastData))},50)}function closeExpandedView(event){if(event&&event.target.id!=="expanded-overlay")return;document.getElementById("expanded-overlay").classList.remove("open")}
 const initialParams=new URLSearchParams(window.location.search);const initialTicker=initialParams.get("ticker");if(initialTicker){document.getElementById("stock-search").value=initialTicker;selectStock(cleanQuery(initialTicker))}
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="session.js"></script>
 </body>
 </html>

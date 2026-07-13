@@ -1,4 +1,4 @@
-/* Shared StockSensei navbar + footer */
+
 .site-header{
   display:flex;
   align-items:center;
@@ -33,8 +33,8 @@
 }
 
 .site-brand-mark svg{
-  width:42px;
-  height:42px;
+  width:45px;
+  height:45px;
   display:block;
 }
 
@@ -130,9 +130,10 @@
   }
 
   .site-brand-mark svg{
-    width:36px;
-    height:36px;
-  }
+  width:45px;
+  height:45px;
+  display:block;
+}
 
   .site-brand-text{ font-size:24px; }
 
@@ -388,3 +389,150 @@ transform:none;
     background:#eef2ff;
     color:#12365d;
 }
+
+.login-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  padding:8px 15px !important;
+  border-radius:999px;
+  background:#10182b !important;
+  color:#fff !important;
+  font-weight:850 !important;
+  text-decoration:none;
+}
+
+.login-btn:hover{ opacity:.86 !important; }
+
+.profile-section{ margin-top:24px; }
+
+.site-brand{
+  isolation:isolate;
+}
+
+.site-brand-mark{
+  position:relative;
+  background:linear-gradient(145deg, #ffffff, #eef5ff);
+  border:1px solid rgba(18, 54, 93, .10);
+  transition:transform .26s ease, box-shadow .26s ease, border-color .26s ease;
+}
+
+.site-brand-mark::after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(47,125,242,.22), transparent 58%);
+  opacity:.75;
+  z-index:0;
+}
+
+.stocksensei-logo-svg{
+  position:relative;
+  z-index:1;
+  width:45px;
+  height:45px;
+  display:block;
+  overflow:visible;
+}
+
+.logo-candles path,
+.logo-candles rect{
+  fill:#d9edf9;
+  stroke:#0f2238;
+  stroke-width:2;
+  vector-effect:non-scaling-stroke;
+}
+
+.logo-candles rect:nth-of-type(2),
+.logo-candles rect:nth-of-type(3){
+  fill:#2f7df2;
+}
+
+.logo-swoosh{
+  fill:none;
+  stroke:#2f7df2;
+  stroke-width:3.5;
+  stroke-linecap:round;
+  opacity:.6;
+}
+
+.logo-sensei{
+  transform-origin:32px 34px;
+  animation:logo-breathe 4.8s ease-in-out infinite;
+}
+
+.logo-robe{ fill:#12365d; }
+.logo-robe-accent{ fill:#2f7df2; opacity:.88; }
+.logo-face{ fill:#f0c8a3; }
+.logo-beard{ fill:#edf2f7; }
+.logo-hair{ fill:#d6dee8; }
+.logo-bun{ fill:#c8d4df; }
+
+.logo-features{
+  fill:none;
+  stroke:#0f2238;
+  stroke-width:2;
+  stroke-linecap:round;
+}
+
+.logo-sparkline{
+  fill:none;
+  stroke:#ef4444;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:76;
+  stroke-dashoffset:76;
+  filter:drop-shadow(0 2px 2px rgba(239,68,68,.18));
+  animation:logo-line-draw 1.4s ease .25s forwards;
+}
+
+.site-brand-text{
+  transition:transform .26s ease;
+}
+
+.site-brand:hover .site-brand-mark,
+.site-brand:focus-visible .site-brand-mark{
+  transform:translateY(-2px) scale(1.04);
+  border-color:rgba(47,125,242,.32);
+  box-shadow:0 12px 26px rgba(15, 35, 70, .20);
+}
+
+.site-brand:hover .logo-sparkline,
+.site-brand:focus-visible .logo-sparkline{
+  animation:logo-line-redraw .9s ease forwards;
+}
+
+.site-brand:hover .site-brand-text,
+.site-brand:focus-visible .site-brand-text{
+  transform:translateX(2px);
+}
+
+@keyframes logo-line-draw{
+  to{ stroke-dashoffset:0; }
+}
+
+@keyframes logo-line-redraw{
+  from{ stroke-dashoffset:76; }
+  to{ stroke-dashoffset:0; }
+}
+
+@keyframes logo-breathe{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-1.4px); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .site-brand-mark,
+  .site-brand-text,
+  .logo-sensei,
+  .logo-sparkline{
+    animation:none !important;
+    transition:none !important;
+  }
+
+  .logo-sparkline{ stroke-dashoffset:0; }
+}
+
