@@ -238,16 +238,6 @@ ${email}
 </a>
 
 
-<a href="watchlist.html">
-⭐ Watchlist
-</a>
-
-
-<a href="Predict.html">
-📈 Predictions
-</a>
-
-
 <button onclick="logout()">
 🚪 Logout
 </button>
