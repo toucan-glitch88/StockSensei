@@ -4,4 +4,6 @@ pandas
 joblib
 yfinance
 scikit-learn
-
+supabase
+python-dotenv
+statsmodels

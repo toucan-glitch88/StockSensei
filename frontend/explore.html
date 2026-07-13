@@ -32,7 +32,7 @@
   main{
     width:min(1180px, calc(100% - 40px));
     margin:0 auto;
-    padding:38px 0 64px;
+    padding:38px 0 20px;
   }
 
   h1,h2,h3,p{margin-top:0;}
@@ -66,11 +66,6 @@
     border:1px solid var(--line);
     border-radius:18px;
     box-shadow:0 10px 28px rgba(20,23,31,.06);
-  }
-
-  .grid{
-    display:grid;
-    gap:22px;
   }
 
   .button{
@@ -124,19 +119,19 @@
   .badge{display:inline-flex; border-radius:999px; padding:6px 10px; background:#edf2fb; color:var(--navy); font-size:12px; font-weight:800;}
   .positive{color:var(--green); font-weight:900;}
   .negative{color:var(--red); font-weight:900;}
+  .predict-link{color:var(--blue); font-weight:900; text-decoration:none;}
+  @media (max-width:900px){.market-grid,.explore-tools{grid-template-columns:1fr;} table,thead,tbody,tr,th,td{display:block;} thead{display:none;} tr{border-bottom:1px solid var(--line); padding:10px 0;} td{border:0; padding:7px 10px;} td::before{content:attr(data-label); display:block; color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:2px;}}
 
-  @media (max-width:900px){
-    .market-grid{grid-template-columns:1fr;}
-    .explore-tools{grid-template-columns:1fr;}
-    table,thead,tbody,tr,th,td{display:block;}
-    thead{display:none;}
-    tr{border-bottom:1px solid var(--line); padding:10px 0;}
-    td{border:0; padding:7px 10px;}
-    td::before{content:attr(data-label); display:block; color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:2px;}
-  }
 </style>
 <link rel="stylesheet" href="shared-nav.css">
 </head>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+<script src="session.js"></script>
+
 <body>
 <header class="site-header">
   <a class="site-brand" href="index.html" aria-label="StockSensei home">
@@ -151,7 +146,7 @@
         <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
         <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
         <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
-        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
+        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27H55z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
         <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
       </svg>
     </span>
@@ -159,24 +154,25 @@
   </a>
 
   <nav class="site-nav" aria-label="Main navigation">
-    <a href="index.html">Home</a>
-    <a href="Predict.html">Predict</a>
-    <a href="learn.html">Learn</a>
-    <a href="watchlist.html">Watchlist</a>
-    <a href="explore.html" class="active">Explore</a>
-    <a href="About.html">About Us</a>
+    <a href="index.html" class="active">Home</a>
+      <a href="Predict.html">Predict</a>
+      <a href="learn.html">Learn</a>
+      <a href="watchlist.html">Watchlist</a>
+      <a href="explore.html">Explore</a>
+      <a href="About.html">About Us</a>
+
+      <div id="userArea"></div>
   </nav>
 </header>
-
 <main>
   <div class="page-kicker">Market discovery</div>
   <h1 class="page-title">Explore stocks by trend and sector.</h1>
-  <p class="page-subtitle">Scan a small beginner-friendly market list, filter by sector, and find tickers to research on the Predict page.</p>
+  <p class="page-subtitle">Search companies, filter by sector, and jump straight into a prediction when a ticker catches your eye.</p>
 
   <section class="market-grid">
     <article class="panel market-card"><h2>S&P 500 Sample</h2><div class="value">5,487</div><div class="move">+0.64%</div></article>
     <article class="panel market-card"><h2>Top Sample Sector</h2><div class="value">Tech</div><div class="move">Momentum up</div></article>
-    <article class="panel market-card"><h2>Watchlist Ideas</h2><div class="value">8</div><div class="move">Starter tickers</div></article>
+    <article class="panel market-card"><h2>Watchlist Ideas</h2><div class="value">10</div><div class="move">Starter tickers</div></article>
   </section>
 
   <section class="explore-tools">
@@ -187,36 +183,38 @@
       <option value="Consumer">Consumer</option>
       <option value="Finance">Finance</option>
       <option value="Energy">Energy</option>
+      <option value="Semiconductor">Semiconductor</option>
     </select>
   </section>
 
   <section class="panel stock-table">
     <table>
-      <thead>
-        <tr>
-          <th>Ticker</th>
-          <th>Company</th>
-          <th>Sector</th>
-          <th>Sample Price</th>
-          <th>Move</th>
-          <th>Signal</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Sample Price</th><th>Move</th><th>Action</th></tr></thead>
       <tbody id="stock-rows"></tbody>
     </table>
   </section>
 </main>
-
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <strong>Education Only Disclaimer</strong>
+      <p>StockSensei is an educational stock analysis tool. Model outputs, sample charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
+    </div>
+    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
+  </div>
+</footer>
 <script>
   const stocks = [
-    ["AAPL", "Apple Inc.", "Technology", "$175.29", "+6.90%", "Strong trend"],
-    ["MSFT", "Microsoft", "Technology", "$421.44", "+1.12%", "Steady"],
-    ["NVDA", "NVIDIA", "Technology", "$128.72", "+3.84%", "High momentum"],
-    ["TSLA", "Tesla", "Consumer", "$248.91", "-2.18%", "Volatile"],
-    ["AMZN", "Amazon", "Consumer", "$199.32", "+1.48%", "Steady"],
-    ["JPM", "JPMorgan Chase", "Finance", "$207.19", "+0.41%", "Low volatility"],
-    ["XOM", "Exxon Mobil", "Energy", "$113.58", "-0.36%", "Range bound"],
-    ["META", "Meta Platforms", "Technology", "$504.71", "-0.62%", "Watch risk"]
+    ["AAPL", "Apple Inc.", "Technology", "$175.29", "+6.90%"],
+    ["MSFT", "Microsoft", "Technology", "$421.44", "+1.12%"],
+    ["NVDA", "NVIDIA", "Semiconductor", "$128.72", "+3.84%"],
+    ["AMD", "Advanced Micro Devices", "Semiconductor", "$162.33", "+2.05%"],
+    ["MU", "Micron Technology", "Semiconductor", "$131.18", "+1.37%"],
+    ["TSLA", "Tesla", "Consumer", "$248.91", "-2.18%"],
+    ["AMZN", "Amazon", "Consumer", "$199.32", "+1.48%"],
+    ["JPM", "JPMorgan Chase", "Finance", "$207.19", "+0.41%"],
+    ["XOM", "Exxon Mobil", "Energy", "$113.58", "-0.36%"],
+    ["META", "Meta Platforms", "Technology", "$504.71", "-0.62%"]
   ];
 
   function renderStocks(){
@@ -230,19 +228,16 @@
 
     document.getElementById("stock-rows").innerHTML = rows.map(stock => {
       const down = stock[4].startsWith("-");
-      return `
-        <tr>
-          <td data-label="Ticker"><strong>${stock[0]}</strong></td>
-          <td data-label="Company">${stock[1]}</td>
-          <td data-label="Sector"><span class="badge">${stock[2]}</span></td>
-          <td data-label="Sample Price">${stock[3]}</td>
-          <td data-label="Move" class="${down ? "negative" : "positive"}">${stock[4]}</td>
-          <td data-label="Signal">${stock[5]}</td>
-        </tr>
-      `;
+      return `<tr>
+        <td data-label="Ticker"><strong>${stock[0]}</strong></td>
+        <td data-label="Company">${stock[1]}</td>
+        <td data-label="Sector"><span class="badge">${stock[2]}</span></td>
+        <td data-label="Sample Price">${stock[3]}</td>
+        <td data-label="Move" class="${down ? "negative" : "positive"}">${stock[4]}</td>
+        <td data-label="Action"><a class="predict-link" href="Predict.html?ticker=${stock[0]}">Predict</a></td>
+      </tr>`;
     }).join("");
   }
-
   renderStocks();
 </script>
 </body>

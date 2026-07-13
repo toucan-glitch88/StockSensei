@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stock Sensei — AI Stock Predictions</title>
-
+<title>StockSensei - AI Stock Predictions</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
   :root{
     --navy:#1b2340;
@@ -32,54 +30,6 @@
     background:var(--bg);
     color:var(--text);
   }
-
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:28px;
-    padding:14px clamp(20px, 5vw, 72px);
-    background: linear-gradient(90deg, #8fa8d3, #a9b8d9);
-    position:sticky;
-    top:0;
-    z-index:10;
-  }
-
-  .logo{
-    display:inline-flex;
-    align-items:center;
-    text-decoration:none;
-    flex-shrink:0;
-  }
-
-  .brand-logo{
-    display:block;
-    width:clamp(230px, 28vw, 360px);
-    max-height:86px;
-    object-fit:contain;
-  }
-
-  nav{
-    display:flex;
-    gap:clamp(18px, 3vw, 42px);
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  nav a{
-    text-decoration:none;
-    color: var(--navy);
-    font-size:17px;
-    font-weight:500;
-    padding:4px 2px;
-  }
-
-  nav a.active{
-    font-weight:700;
-  }
-
-  nav a:hover{ opacity:0.85; }
 
   main{
     max-width:1200px;
@@ -379,22 +329,6 @@
       grid-template-columns:1fr;
     }
 
-    header{
-      align-items:flex-start;
-      flex-direction:column;
-      gap:14px;
-      padding:14px 20px;
-    }
-
-    nav{
-      gap:16px;
-      justify-content:flex-start;
-    }
-
-    .brand-logo{
-      width:min(100%, 320px);
-    }
-
     .hero h1{
       font-size:36px;
     }
@@ -405,334 +339,77 @@
   }
 </style>
 </head>
-
 <body>
 
-<header>
-  <a class="logo" href="index.html" aria-label="StockSensei home">
-    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+<header class="site-header">
+  <a class="site-brand" href="index.html" aria-label="StockSensei home">
+    <span class="site-brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" role="img">
+        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
+        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
+        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
+        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
+        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
+        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
+        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
+        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
+        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
+        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
+      </svg>
+    </span>
+    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
   </a>
 
-  <nav>
-  <a href="index.html" class="active">Home</a>
-  <a href="Predict.html">Predict</a>
-  <a href="learn.html">Learn</a>
-  <a href="watchlist.html">Watchlist</a>
-  <a href="explore.html">Explore</a>
-  <a href="About.html">About Us</a>
-</nav>
-
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="index.html" class="active">Home</a>
+    <a href="Predict.html">Predict</a>
+    <a href="learn.html">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html">Explore</a>
+    <a href="About.html">About Us</a>
+  </nav>
 </header>
-
 <main>
-  <div class="hero">
-    <h1>Learn.<br>Predict.<br>Understand.</h1>
-    <p>AI-powered stock predictions designed to help beginners</p>
-
-    <div class="search-wrap">
-      <input id="ticker-input" type="text" placeholder="Search for stocks, e.g. AAPL, MSFT, TSLA">
+  <section class="hero">
+    <h1>Live stock research with future price forecasts.</h1>
+    <p>Search any public ticker or company name. StockSensei pulls real Yahoo Finance data through your backend and draws a future forecast with confidence intervals.</p>
+    <div class="search-area">
+      <div class="search-row"><input id="stock-search" type="text" placeholder="Search Apple, NVDA, Tesla, Spotify..."><button onclick="goPredict()">Predict</button></div>
+      <div class="search-results" id="search-results"></div>
     </div>
-
-    <div class="quick-links">
-      <button class="predict-btn" type="button" onclick="getPrediction()">
-        <span class="icon">📈</span>
-        <span>
-          <div class="label">Predict</div>
-          <div class="sub">Get AI-powered stock predictions</div>
-        </span>
-      </button>
-
-      <div id="prediction-result"></div>
-
-      <div class="row-links">
-        <button class="link-card watchlist" onclick="sendPrompt('Open Watchlist')">
-          <span class="icon">★</span>
-          <span>
-            <div class="label">Watchlist</div>
-            <div class="sub">Track your favorite stocks</div>
-          </span>
-        </button>
-
-        <button class="link-card explore" onclick="sendPrompt('Open Explore')">
-          <span class="icon">🧭</span>
-          <span>
-            <div class="label">Explore</div>
-            <div class="sub">Discover sectors, top movers, and more.</div>
-          </span>
-        </button>
-
-        <button class="link-card learn" onclick="sendPrompt('Open Learn')">
-          <span class="icon">🎓</span>
-          <span>
-            <div class="label">Learn</div>
-            <div class="sub">Understand stocks and predictions.</div>
-          </span>
-        </button>
-      </div>
+    <div class="actions"><button class="action primary" onclick="goPredict()">Open prediction</button><button class="action" onclick="window.location.href='learn.html'">Learn metrics</button><button class="action" onclick="window.location.href='watchlist.html'">Watchlist</button></div>
+  </section>
+  <section class="stock-card">
+    <div class="card-top"><div><div class="ticker-name" id="chart-ticker">AAPL</div><div class="company-name" id="chart-company">Loading from yfinance...</div></div><div class="model-pill" id="model-pill">Forecast</div></div>
+    <div class="price-row"><div class="price" id="price">$--</div><div class="change" id="change">Loading...</div></div>
+    <div class="chart-wrap"><canvas id="stockChart"></canvas></div>
+    <div class="forecast-summary">
+      <div class="metric"><span>10-day estimate</span><strong id="future-price">--</strong></div>
+      <div class="metric"><span>Expected move</span><strong id="future-change">--</strong></div>
+      <div class="metric"><span>Interval width</span><strong id="interval-width">--</strong></div>
     </div>
-  </div>
-
-  <div class="stock-card">
-    <div>
-      <div class="ticker-name" id="chart-ticker">AAPL</div>
-      <div class="company-name" id="chart-company">Sample chart preview</div>
-    </div>
-
-    <div class="price-row">
-      <div class="price" id="price">175.43</div>
-      <div class="change" id="change">+2.35 (+1.36%)</div>
-    </div>
-
-    <div class="prediction-badge" id="prediction-badge">AI Prediction: Waiting</div>
-
-    <div class="range-buttons" id="range-buttons">
-      <button data-range="1D">1D</button>
-      <button data-range="1W">1W</button>
-      <button data-range="1M" class="active">1M</button>
-      <button data-range="3M">3M</button>
-      <button data-range="1Y">1Y</button>
-      <button data-range="ALL">ALL</button>
-    </div>
-
-    <div class="chart-wrap">
-      <canvas id="stockChart"></canvas>
-    </div>
-  </div>
+    <p class="chart-note" id="chart-note">Loading actual history and forecast from Flask.</p>
+  </section>
 </main>
-
-<div class="disclaimer">
-  <div class="disclaimer-inner">
-    <span>⚠️</span>
-    <div>
-      <b>Education Only Disclaimer</b>
-      <p>Stock Sensei is an educational tool designed to help you learn about the stock market. It is not financial advice.</p>
-    </div>
-  </div>
-</div>
-
+<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div></div></footer>
 <script>
-const API_BASES = ["http://127.0.0.1:5000", "http://localhost:5000"];
-
-function sendPrompt(message) {
-  const routes = {
-    "Open Watchlist": "watchlist.html",
-    "Open Explore": "explore.html",
-    "Open Learn": "learn.html"
-  };
-
-  const target = routes[message];
-  if (target) {
-    window.location.href = target;
-  }
-}
-
-async function getPrediction() {
-  const tickerInput = document.getElementById("ticker-input");
-  const resultBox = document.getElementById("prediction-result");
-
-  const ticker = tickerInput.value.trim().toUpperCase();
-
-  if (!ticker) {
-    resultBox.innerHTML = `
-      <div class="result-card">
-        <p>Please enter a ticker symbol.</p>
-      </div>
-    `;
-    return;
-  }
-
-  resultBox.innerHTML = `
-    <div class="result-card">
-      <p>Loading prediction...</p>
-    </div>
-  `;
-
-  let lastError = "Could not connect to backend. Make sure Flask is running on port 5000.";
-
-  for (const base of API_BASES) {
-    try {
-      const response = await fetch(base + "/predict/" + ticker);
-      const data = await response.json();
-
-      if (response.ok) {
-        resultBox.innerHTML = `
-  <div class="result-card">
-    <h3>${data.ticker}</h3>
-
-    <p><strong>Latest Data Date:</strong> ${data.latest_date}</p>
-    <p><strong>Current Price:</strong> $${data.current_price}</p>
-    <p><strong>Daily Return:</strong> ${data.daily_return_percent}%</p>
-    <p><strong>5-Day Moving Average:</strong> $${data.moving_average_5}</p>
-    <p><strong>10-Day Moving Average:</strong> $${data.moving_average_10}</p>
-
-    <hr>
-
-    <p><strong>Prediction:</strong> ${data.prediction}</p>
-    <p><strong>Confidence:</strong> ${data.confidence}%</p>
-    <p><strong>Risk Level:</strong> ${data.risk_level}</p>
-    <p><strong>Risk Explanation:</strong> ${data.risk_explanation}</p>
-
-    <p>${data.explanation}</p>
-    <p><em>${data.note}</em></p>
-  </div>
-`;
-
-        document.getElementById("chart-ticker").textContent = data.ticker;
-
-        const badge = document.getElementById("prediction-badge");
-
-        if (data.prediction === "Up") {
-          badge.textContent = "AI Prediction: Bullish ↑";
-          badge.className = "prediction-badge";
-        } else {
-          badge.textContent = "AI Prediction: Bearish ↓";
-          badge.className = "prediction-badge bearish";
-        }
-
-        return;
-      }
-
-      lastError = data.error || `Request failed with ${response.status}`;
-    } catch (error) {
-      lastError = `Could not connect to backend at ${base}.`;
-    }
-  }
-
-  resultBox.innerHTML = `
-    <div class="result-card">
-      <p>${lastError}</p>
-    </div>
-  `;
-}
-
-function generateSeries(range){
-  const configs = {
-    "1D": {points:24, start:173.5, vol:0.35},
-    "1W": {points:7, start:170, vol:1.2},
-    "1M": {points:22, start:163, vol:1.6},
-    "3M": {points:65, start:150, vol:2.0},
-    "1Y": {points:52, start:130, vol:3.0},
-    "ALL": {points:60, start:40, vol:4.5}
-  };
-
-  const cfg = configs[range];
-  let price = cfg.start;
-  const data = [];
-  const labels = [];
-
-  let seed = 42;
-
-  function rand(){
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  }
-
-  for(let i = 0; i < cfg.points; i++){
-    const drift = 0.35;
-    const noise = (rand() - 0.5) * cfg.vol;
-    price = Math.max(1, price + drift + noise);
-    data.push(Math.round(price * 100) / 100);
-    labels.push(i + 1);
-  }
-
-  return {labels, data};
-}
-
-let chart;
-
-function renderChart(range){
-  const canvas = document.getElementById("stockChart");
-
-  if (!canvas) {
-    console.log("Canvas not found");
-    return;
-  }
-
-  if (typeof Chart === "undefined") {
-    console.log("Chart.js did not load");
-    return;
-  }
-
-  const ctx = canvas.getContext("2d");
-  const {labels, data} = generateSeries(range);
-
-  const first = data[0];
-  const last = data[data.length - 1];
-  const diff = last - first;
-  const pct = (diff / first * 100).toFixed(2);
-  const isUp = diff >= 0;
-
-  document.getElementById("price").textContent = last.toFixed(2);
-
-  const changeEl = document.getElementById("change");
-  changeEl.textContent = `${isUp ? "+" : ""}${diff.toFixed(2)} (${isUp ? "+" : ""}${pct}%)`;
-  changeEl.className = "change" + (isUp ? "" : " down");
-
-  if (chart) {
-    chart.destroy();
-  }
-
-  chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        borderColor: isUp ? "#1f9d55" : "#d0453c",
-        backgroundColor: isUp ? "rgba(31,157,85,0.08)" : "rgba(208,69,60,0.08)",
-        borderWidth: 2,
-        pointRadius: 0,
-        fill: true,
-        tension: 0.35
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {display: false}
-      },
-      scales: {
-        x: {
-          grid: {display: false}
-        },
-        y: {
-          position: "right",
-          grid: {color: "#f0f2f9"}
-        }
-      }
-    }
-  });
-}
-
-document.getElementById("ticker-input").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    getPrediction();
-  }
-});
-
-document.getElementById("range-buttons").addEventListener("click", function(e) {
-  const btn = e.target.closest("button");
-
-  if (!btn) return;
-
-  document.querySelectorAll("#range-buttons button").forEach(function(button) {
-    button.classList.remove("active");
-  });
-
-  btn.classList.add("active");
-  renderChart(btn.dataset.range);
-});
-
-// Wait for Chart.js to load before rendering initial chart
-window.addEventListener("load", function() {
-  if (typeof Chart !== "undefined") {
-    renderChart("1M");
-  } else {
-    console.error("Chart.js failed to load");
-  }
-});
+const API_BASES=["http://127.0.0.1:5000","http://localhost:5000"];let chart;let selectedTicker="AAPL";let searchTimer;
+async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
+function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
+function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}
+async function goPredict(){const q=cleanQuery(document.getElementById("stock-search").value||selectedTicker);if(!q)return;window.location.href="Predict.html?ticker="+encodeURIComponent(q)}
+function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}
+function chooseResult(symbol){selectedTicker=symbol;document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";loadForecast(symbol)}
+document.getElementById("stock-search").addEventListener("input",()=>{clearTimeout(searchTimer);const q=document.getElementById("stock-search").value.trim();if(q.length<2){showResults([]);return}searchTimer=setTimeout(async()=>{try{const data=await fetchJson("/search/"+encodeURIComponent(q));showResults(data.results||[])}catch(e){showResults([])}},350)});
+document.getElementById("stock-search").addEventListener("keydown",e=>{if(e.key==="Enter")goPredict()});
+async function loadForecast(ticker){selectedTicker=ticker;document.getElementById("chart-note").textContent="Loading "+ticker+" from yfinance...";try{const data=await fetchJson("/forecast/"+encodeURIComponent(ticker)+"?days=10");renderForecast(data)}catch(e){document.getElementById("chart-note").textContent="Could not load backend forecast. Start Flask on port 5000, then refresh."}}
+function renderForecast(data){document.getElementById("chart-ticker").textContent=data.ticker;document.getElementById("chart-company").textContent=data.company_name||data.ticker;document.getElementById("model-pill").textContent=data.forecast_model;document.getElementById("price").textContent=money(data.last_close);document.getElementById("change").textContent=pct(data.expected_change_percent);document.getElementById("change").className="change"+(Number(data.expected_change_percent)<0?" down":"");const final=data.forecast[data.forecast.length-1];document.getElementById("future-price").textContent=money(final.predicted_close);document.getElementById("future-change").textContent=pct(data.expected_change_percent);document.getElementById("interval-width").textContent=money(data.average_confidence_interval_width);document.getElementById("chart-note").textContent="Solid line is actual yfinance close. Dashed line is future forecast. Shaded band is the confidence interval.";
+ const history=data.history.slice(-45);const labels=[...history.map(r=>labelDate(r.date)),...data.forecast.map(r=>labelDate(r.date))];const actual=[...history.map(r=>r.close),...data.forecast.map(()=>null)];actual[actual.length-data.forecast.length]=history[history.length-1].close;const forecast=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.predicted_close)];const upper=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.upper)];const lower=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.lower)];
+ if(chart)chart.destroy();chart=new Chart(document.getElementById("stockChart"),{type:"line",data:{labels,datasets:[{label:"Upper confidence",data:upper,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:"+1",tension:.22},{label:"Lower confidence",data:lower,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:false,tension:.22},{label:"Actual close",data:actual,borderColor:"#1f9d55",backgroundColor:"rgba(31,157,85,.08)",pointRadius:1.5,borderWidth:2,tension:.22},{label:"Forecast",data:forecast,borderColor:"#3b6fd4",borderDash:[6,5],pointRadius:2,borderWidth:2,tension:.22}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.parsed.y)}}},scales:{x:{grid:{display:false},title:{display:true,text:"Date",color:"#6b7488",font:{weight:"700"}},ticks:{maxTicksLimit:8}},y:{position:"right",grid:{color:"#eef1f6"},title:{display:true,text:"Price (USD)",color:"#6b7488",font:{weight:"700"}},ticks:{callback:v=>"$"+Number(v).toLocaleString()}}}}})}
+window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
-
 </body>
 </html>
