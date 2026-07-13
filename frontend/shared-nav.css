@@ -388,3 +388,72 @@ transform:none;
     background:#eef2ff;
     color:#12365d;
 }
+
+.profile-container{
+
+max-width:600px;
+margin:50px auto;
+
+}
+
+
+.profile-card{
+
+background:white;
+padding:40px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+
+.profile-card input{
+
+width:100%;
+padding:12px;
+margin:8px 0 20px;
+
+border-radius:10px;
+border:1px solid #ddd;
+
+}
+
+
+.profile-card button{
+
+width:100%;
+padding:14px;
+
+background:#2f7df2;
+
+color:white;
+
+border:none;
+
+border-radius:12px;
+
+font-weight:700;
+
+cursor:pointer;
+
+}
+
+
+.profile-card hr{
+
+margin:30px 0;
+
+}
+
+
+.success{
+
+color:green;
+
+}
+
+.error{
+
+color:red;
+
+}

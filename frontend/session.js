@@ -2,7 +2,6 @@ const publicPages = [
     "login.html",
     "index.html",
     "about.html",
-    "learn.html"
 ];
 
 window.addEventListener("load", checkSession);
@@ -141,14 +140,30 @@ function setupNavbar(user) {
 
     if (!userArea) return;
 
-    const username = user.email.split("@")[0];
 
+    const email = user.email;
+
+    const username = email.split("@")[0];
+
+
+    // Create 2 initials
     const initials = username
-        .split(/[._-]/)
-        .map(x => x[0].toUpperCase())
+        .split(/[._\-]/)
+        .filter(Boolean)
+        .map(part => part[0].toUpperCase())
         .join("")
-        .substring(0,2);
+        .substring(0, 2);
 
+
+    // If email has no separator (example: eashantilaye@gmail.com)
+    // use first two letters
+    const finalInitials = initials.length >= 2
+        ? initials
+        : username.substring(0,2).toUpperCase();
+
+
+
+    // Generate consistent avatar color
     const colors = [
         "#2563eb",
         "#059669",
@@ -160,56 +175,89 @@ function setupNavbar(user) {
         "#4f46e5"
     ];
 
+
     let hash = 0;
 
-    for(const c of username){
-        hash += c.charCodeAt(0);
+    for (const char of email) {
+        hash += char.charCodeAt(0);
     }
+
 
     const color = colors[hash % colors.length];
 
+
+
     userArea.innerHTML = `
+
 <div class="profile-menu">
+
 
 <button class="profile-button">
 
-<div class="avatar" style="background:${color};">
+<div class="avatar"
+style="background:${color};">
 
-${initials}
+${finalInitials}
 
 </div>
 
 </button>
 
+
+
 <div class="dropdown">
+
 
 <div class="dropdown-top">
 
-<div class="avatar big" style="background:${color};">
 
-${initials}
+<div class="avatar big"
+style="background:${color};">
 
-</div>
-
-<h3>${username}</h3>
-
-<p>${user.email}</p>
+${finalInitials}
 
 </div>
 
-<a href="profile.html">👤 Profile</a>
 
-<a href="watchlist.html">⭐ Watchlist</a>
+<h3>
+${username}
+</h3>
 
-<a href="Predict.html">📈 Predictions</a>
 
-<a href="#">⚙ Settings</a>
+<p>
+${email}
+</p>
 
-<button onclick="logout()">🚪 Logout</button>
 
 </div>
 
+
+
+<a href="profile.html">
+👤 Profile
+</a>
+
+
+<a href="watchlist.html">
+⭐ Watchlist
+</a>
+
+
+<a href="Predict.html">
+📈 Predictions
+</a>
+
+
+<button onclick="logout()">
+🚪 Logout
+</button>
+
+
 </div>
+
+
+</div>
+
 `;
 
 }
