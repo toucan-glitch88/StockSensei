@@ -29,7 +29,7 @@ except Exception:
 app = Flask(__name__)
 CORS(app)
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = (
