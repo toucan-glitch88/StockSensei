@@ -6,262 +6,74 @@
 <title>StockSensei - AI Stock Predictions</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  :root{
-    --navy:#1b2340;
-    --blue:#3b6fd4;
-    --blue-light:#eaf0fc;
-    --bg:#eef1fb;
-    --card:#ffffff;
-    --green:#1f9d55;
-    --green-bg:#e5f7ec;
-    --red:#d0453c;
-    --text:#1b2333;
-    --muted:#6b7488;
-    --border:#e2e6f2;
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0; background:var(--bg); color:var(--text);}
-  main{max-width:1200px; margin:0 auto; padding:48px 40px 30px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;}
-  .hero h1{font-size:48px; line-height:1.15; margin:0 0 18px; color:var(--navy); text-decoration:underline; font-weight:700;}
-  .hero p{color:var(--muted); font-size:16px; margin:0 0 24px;}
-  .search-wrap{margin-bottom:24px;}
-  .search-wrap input{width:100%; padding:14px 18px; border-radius:24px; border:1px solid var(--border); background:#fff; font-size:14px; outline:none;}
-  .search-wrap input:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(59,111,212,0.15);}
-  .quick-links{display:flex; flex-direction:column; gap:14px;}
-  .predict-btn{display:flex; align-items:center; gap:14px; background:var(--navy); color:#fff; border:none; border-radius:16px; padding:16px 20px; cursor:pointer; text-align:left; width:fit-content; min-width:220px;}
-  .predict-btn:hover,.link-card:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(30,40,80,0.10);}
-  .predict-btn .icon,.link-card .icon{border-radius:10px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
-  .predict-btn .icon{background:rgba(255,255,255,0.15);}
-  .label{font-weight:700; font-size:14px;}
-  .sub{font-size:12px; opacity:0.8;}
-  .row-links{display:flex; gap:16px;}
-  .link-card{flex:1; background:#fff; border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; text-align:left;}
-  .link-card.watchlist .icon{background:#e6f7ee; color:var(--green);}
-  .link-card.explore .icon{background:#fdecd6; color:#e08a2b;}
-  .link-card.learn .icon{background:#e9e6fb; color:#6a4fd6;}
-  .link-card .sub{color:var(--muted); opacity:1;}
-  .stock-card{background:var(--card); border-radius:20px; padding:24px; box-shadow:0 10px 30px rgba(30,40,90,0.08);}
-  .ticker-name{font-weight:800; font-size:15px; color:var(--navy);}
-  .company-name{font-size:12px; color:var(--muted);}
-  .price-row{display:flex; align-items:baseline; gap:10px; margin:8px 0 12px;}
-  .price{font-size:30px; font-weight:800; color:var(--text);}
-  .change{font-size:14px; font-weight:700; color:var(--green);}
-  .change.down{color:var(--red);}
-  .prediction-badge{display:inline-flex; align-items:center; gap:6px; background:var(--green-bg); color:var(--green); font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; margin-bottom:16px;}
-  .prediction-badge.bearish{background:#fbe9e8; color:var(--red);}
-  .range-buttons{display:flex; gap:6px; justify-content:flex-end; margin-bottom:10px; flex-wrap:wrap;}
-  .range-buttons button{border:none; background:transparent; color:var(--muted); font-size:12px; font-weight:600; padding:6px 10px; border-radius:8px; cursor:pointer;}
-  .range-buttons button.active{background:var(--blue-light); color:var(--blue);}
-  .chart-wrap{position:relative; height:220px;}
-  .chart-note{margin:10px 0 0; color:var(--muted); font-size:12px; font-weight:650;}
-  .result-card{background:white; border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 8px 20px rgba(30,40,90,0.08); margin-top:16px;}
-  .result-card p{margin:8px 0; color:var(--text); font-size:14px;}
-  @media (max-width:860px){main{grid-template-columns:1fr; padding:32px 20px;} .hero h1{font-size:36px;} .row-links{flex-direction:column;}}
+  :root{--navy:#1b2340;--blue:#3b6fd4;--bg:#eef1fb;--card:#ffffff;--green:#1f9d55;--red:#d0453c;--text:#1b2333;--muted:#6b7488;--border:#e2e6f2;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text)}
+  main{max-width:1200px;margin:0 auto;padding:44px 40px 30px;display:grid;grid-template-columns:.95fr 1.05fr;gap:36px;align-items:start}
+  .hero h1{font-size:46px;line-height:1.12;margin:0 0 16px;color:var(--navy);font-weight:800}
+  .hero p{color:var(--muted);font-size:16px;margin:0 0 22px;line-height:1.5}
+  .search-area{position:relative;margin-bottom:18px}
+  .search-row{display:flex;gap:10px;background:#fff;border:1px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 8px 20px rgba(30,40,90,.05)}
+  .search-row input{flex:1;border:0;outline:0;padding:12px 10px;font-size:15px;min-width:0}
+  .search-row button{border:0;background:var(--navy);color:#fff;font-weight:800;border-radius:12px;padding:0 18px;cursor:pointer}
+  .search-results{position:absolute;z-index:10;left:0;right:0;top:58px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 32px rgba(30,40,90,.12);overflow:hidden;display:none}
+  .search-result{width:100%;text-align:left;border:0;background:#fff;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:14px}
+  .search-result:hover{background:#f5f7fc}.search-result strong{color:var(--navy)}.search-result span{color:var(--muted);font-size:12px}
+  .actions{display:flex;gap:12px;flex-wrap:wrap}.action{border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px 16px;cursor:pointer;font-weight:800;color:var(--navy)}.action.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .stock-card{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(30,40,90,.08)}
+  .card-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.ticker-name{font-weight:900;font-size:17px;color:var(--navy)}.company-name{font-size:13px;color:var(--muted)}
+  .model-pill{background:#eef3ff;color:var(--blue);border-radius:999px;padding:7px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+  .price-row{display:flex;align-items:baseline;gap:10px;margin:10px 0 14px}.price{font-size:32px;font-weight:900}.change{font-size:14px;font-weight:800;color:var(--green)}.change.down{color:var(--red)}
+  .chart-wrap{height:280px}.chart-note{margin:12px 0 0;color:var(--muted);font-size:12px;font-weight:650;line-height:1.45}
+  .forecast-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{background:#f7f8fc;border:1px solid var(--border);border-radius:12px;padding:12px}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:4px}.metric strong{font-size:18px;color:var(--navy)}
+  @media(max-width:860px){main{grid-template-columns:1fr;padding:30px 18px}.hero h1{font-size:34px}.forecast-summary{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
 </head>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="session.js"></script>
-
 <body>
 <header class="site-header">
-  <a class="site-brand" href="index.html" aria-label="StockSensei home">
-    <span class="site-brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 64 64" role="img">
-        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
-        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
-        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
-        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
-        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
-        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
-        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
-        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
-        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
-        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27H55z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
-        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
-      </svg>
-    </span>
-    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
-  </a>
-
-  <nav class="site-nav" aria-label="Main navigation">
-
-      <a href="index.html" class="active">Home</a>
-      <a href="Predict.html">Predict</a>
-      <a href="learn.html">Learn</a>
-      <a href="watchlist.html">Watchlist</a>
-      <a href="explore.html">Explore</a>
-      <a href="About.html">About Us</a>
-
-      <div id="userArea"></div>
-
-  </nav>
+  <a class="site-brand" href="index.html" aria-label="StockSensei home"><span class="site-brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" role="img"><path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/><path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/><path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/><path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/><path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/><path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/><path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/><path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/><path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/><path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/><path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/></svg></span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
+  <nav class="site-nav" aria-label="Main navigation"><a href="index.html" class="active">Home</a><a href="Predict.html">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a></nav>
 </header>
 <main>
-  <div class="hero">
-    <h1>Learn.<br>Predict.<br>Understand.</h1>
-    <p>AI-powered stock predictions designed to help beginners research companies, not memorize tickers.</p>
-    <div class="search-wrap">
-      <input id="ticker-input" type="text" list="company-options" placeholder="Search company, like Apple or Nvidia">
-      <datalist id="company-options">
-        <option value="Apple Inc. (AAPL)">
-        <option value="Microsoft (MSFT)">
-        <option value="NVIDIA (NVDA)">
-        <option value="Tesla (TSLA)">
-        <option value="Alphabet (GOOGL)">
-        <option value="Amazon (AMZN)">
-        <option value="Meta (META)">
-        <option value="JPMorgan Chase (JPM)">
-        <option value="Advanced Micro Devices (AMD)">
-        <option value="Micron Technology (MU)">
-      </datalist>
+  <section class="hero">
+    <h1>Live stock research with future price forecasts.</h1>
+    <p>Search any public ticker or company name. StockSensei pulls real Yahoo Finance data through your backend and draws a future forecast with confidence intervals.</p>
+    <div class="search-area">
+      <div class="search-row"><input id="stock-search" type="text" placeholder="Search Apple, NVDA, Tesla, Spotify..."><button onclick="goPredict()">Predict</button></div>
+      <div class="search-results" id="search-results"></div>
     </div>
-    <div class="quick-links">
-      <button class="predict-btn" type="button" onclick="getPrediction()"><span class="icon">📈</span><span><div class="label">Predict</div><div class="sub">Open company prediction</div></span></button>
-      <div id="prediction-result"></div>
-      <div class="row-links">
-        <button class="link-card watchlist" onclick="window.location.href='watchlist.html'"><span class="icon">★</span><span><div class="label">Watchlist</div><div class="sub">Track favorite companies</div></span></button>
-        <button class="link-card explore" onclick="window.location.href='explore.html'"><span class="icon">🧭</span><span><div class="label">Explore</div><div class="sub">Discover sectors and stocks</div></span></button>
-        <button class="link-card learn" onclick="window.location.href='learn.html'"><span class="icon">🎓</span><span><div class="label">Learn</div><div class="sub">Understand the app metrics</div></span></button>
-      </div>
-    </div>
-  </div>
-  <div class="stock-card">
-    <div><div class="ticker-name" id="chart-ticker">AAPL</div><div class="company-name" id="chart-company">Apple Inc.</div></div>
-    <div class="price-row"><div class="price" id="price">$--</div><div class="change" id="change">Loading live data...</div></div>
-    <div class="prediction-badge" id="prediction-badge">Live history chart</div>
-    <div class="range-buttons" id="range-buttons"><button data-range="7">1W</button><button data-range="30" class="active">1M</button><button data-range="60">2M</button></div>
+    <div class="actions"><button class="action primary" onclick="goPredict()">Open prediction</button><button class="action" onclick="window.location.href='learn.html'">Learn metrics</button><button class="action" onclick="window.location.href='watchlist.html'">Watchlist</button></div>
+  </section>
+  <section class="stock-card">
+    <div class="card-top"><div><div class="ticker-name" id="chart-ticker">AAPL</div><div class="company-name" id="chart-company">Loading from yfinance...</div></div><div class="model-pill" id="model-pill">Forecast</div></div>
+    <div class="price-row"><div class="price" id="price">$--</div><div class="change" id="change">Loading...</div></div>
     <div class="chart-wrap"><canvas id="stockChart"></canvas></div>
-    <p class="chart-note" id="chart-note">Loading recent Yahoo Finance history from your Flask backend.</p>
-  </div>
-</main>
-<footer class="site-footer">
-  <div class="site-footer-inner">
-    <div>
-      <strong>Education Only Disclaimer</strong>
-      <p>StockSensei is an educational stock analysis tool. Model outputs, charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
+    <div class="forecast-summary">
+      <div class="metric"><span>10-day estimate</span><strong id="future-price">--</strong></div>
+      <div class="metric"><span>Expected move</span><strong id="future-change">--</strong></div>
+      <div class="metric"><span>Interval width</span><strong id="interval-width">--</strong></div>
     </div>
-    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
-  </div>
-</footer>
+    <p class="chart-note" id="chart-note">Loading actual history and forecast from Flask.</p>
+  </section>
+</main>
+<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div></div></footer>
 <script>
-const API_BASES = ["http://127.0.0.1:5000", "http://localhost:5000"];
-const COMPANY_TO_TICKER = {
-  "AAPL":"AAPL","APPLE":"AAPL","APPLE INC.":"AAPL",
-  "MSFT":"MSFT","MICROSOFT":"MSFT","MICROSOFT CORPORATION":"MSFT",
-  "NVDA":"NVDA","NVIDIA":"NVDA",
-  "TSLA":"TSLA","TESLA":"TSLA","TESLA INC.":"TSLA",
-  "GOOGL":"GOOGL","GOOGLE":"GOOGL","ALPHABET":"GOOGL",
-  "AMZN":"AMZN","AMAZON":"AMZN","AMAZON.COM":"AMZN",
-  "META":"META","FACEBOOK":"META",
-  "JPM":"JPM","JPMORGAN":"JPM","JPMORGAN CHASE":"JPM",
-  "AMD":"AMD","ADVANCED MICRO DEVICES":"AMD",
-  "MU":"MU","MICRON":"MU","MICRON TECHNOLOGY":"MU"
-};
-
-function resolveTicker(value){
-  const raw = value.trim();
-  const paren = raw.match(/\(([A-Z]{1,6})\)/);
-  if (paren) return paren[1];
-  const key = raw.toUpperCase();
-  return COMPANY_TO_TICKER[key] || key.replace(/[^A-Z.]/g, "");
-}
-
-function getPrediction(){
-  const ticker = resolveTicker(document.getElementById("ticker-input").value);
-  if (!ticker) {
-    document.getElementById("prediction-result").innerHTML = '<div class="result-card"><p>Please enter a company or ticker.</p></div>';
-    return;
-  }
-  window.location.href = "Predict.html?ticker=" + encodeURIComponent(ticker);
-}
-
-async function fetchJson(path){
-  let lastError;
-  for (const base of API_BASES) {
-    try {
-      const response = await fetch(base + path);
-      const data = await response.json();
-      if (response.ok) return data;
-      lastError = data.error || response.statusText;
-    } catch (error) {
-      lastError = error.message;
-    }
-  }
-  throw new Error(lastError || "Backend unavailable");
-}
-
-let chart;
-let currentHistory = [];
-
-function money(value){
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "$--";
-  return "$" + Number(value).toFixed(2);
-}
-
-function dateLabel(value){
-  const d = new Date(value + "T00:00:00");
-  return d.toLocaleDateString(undefined, {month:"short", day:"numeric"});
-}
-
-function updateSummaryFromHistory(history){
-  if (!history.length) return;
-  const first = history[0].close;
-  const last = history[history.length - 1].close;
-  const diff = last - first;
-  const pct = (diff / first) * 100;
-  const up = diff >= 0;
-  document.getElementById("price").textContent = money(last);
-  const change = document.getElementById("change");
-  change.textContent = `${up ? "+" : ""}${diff.toFixed(2)} (${up ? "+" : ""}${pct.toFixed(2)}%)`;
-  change.className = "change" + (up ? "" : " down");
-}
-
-function renderChart(days){
-  const canvas = document.getElementById("stockChart");
-  if (!canvas || typeof Chart === "undefined") return;
-  const rows = currentHistory.slice(-Number(days));
-  if (!rows.length) return;
-  const labels = rows.map(row => dateLabel(row.date));
-  const data = rows.map(row => Number(row.close));
-  const up = data[data.length - 1] >= data[0];
-  if (chart) chart.destroy();
-  chart = new Chart(canvas.getContext("2d"), {
-    type:"line",
-    data:{labels, datasets:[{data, borderColor:up ? "#1f9d55" : "#d0453c", backgroundColor:up ? "rgba(31,157,85,.08)" : "rgba(208,69,60,.08)", borderWidth:2, pointRadius:2, pointHoverRadius:4, fill:true, tension:.25}]},
-    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx => "$" + Number(ctx.parsed.y).toFixed(2)}}}, scales:{x:{grid:{display:false}, ticks:{maxTicksLimit:6}}, y:{position:"right", grid:{color:"#f0f2f9"}, ticks:{callback:value => "$" + value}}}}
-  });
-  updateSummaryFromHistory(rows);
-}
-
-async function loadChart(ticker){
-  document.getElementById("chart-note").textContent = "Loading " + ticker + " history from backend...";
-  document.getElementById("chart-ticker").textContent = ticker;
-  try {
-    const [historyData, liveData] = await Promise.all([fetchJson("/history/" + ticker), fetchJson("/live/" + ticker)]);
-    currentHistory = historyData.history || [];
-    document.getElementById("chart-company").textContent = liveData.company_name || ticker;
-    document.getElementById("chart-note").textContent = "Showing recent closing prices from Yahoo Finance via yfinance.";
-    renderChart(document.querySelector("#range-buttons button.active").dataset.range);
-  } catch (error) {
-    document.getElementById("chart-note").textContent = "Could not load backend history. Start Flask on port 5000, then refresh.";
-  }
-}
-
-document.getElementById("ticker-input").addEventListener("keydown", e => { if (e.key === "Enter") getPrediction(); });
-document.getElementById("range-buttons").addEventListener("click", e => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-  document.querySelectorAll("#range-buttons button").forEach(button => button.classList.remove("active"));
-  btn.classList.add("active");
-  renderChart(btn.dataset.range);
-});
-window.addEventListener("load", () => loadChart("AAPL"));
+const API_BASES=["http://127.0.0.1:5000","http://localhost:5000"];let chart;let selectedTicker="AAPL";let searchTimer;
+async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
+function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
+function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}
+async function goPredict(){const q=cleanQuery(document.getElementById("stock-search").value||selectedTicker);if(!q)return;window.location.href="Predict.html?ticker="+encodeURIComponent(q)}
+function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}
+function chooseResult(symbol){selectedTicker=symbol;document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";loadForecast(symbol)}
+document.getElementById("stock-search").addEventListener("input",()=>{clearTimeout(searchTimer);const q=document.getElementById("stock-search").value.trim();if(q.length<2){showResults([]);return}searchTimer=setTimeout(async()=>{try{const data=await fetchJson("/search/"+encodeURIComponent(q));showResults(data.results||[])}catch(e){showResults([])}},350)});
+document.getElementById("stock-search").addEventListener("keydown",e=>{if(e.key==="Enter")goPredict()});
+async function loadForecast(ticker){selectedTicker=ticker;document.getElementById("chart-note").textContent="Loading "+ticker+" from yfinance...";try{const data=await fetchJson("/forecast/"+encodeURIComponent(ticker)+"?days=10");renderForecast(data)}catch(e){document.getElementById("chart-note").textContent="Could not load backend forecast. Start Flask on port 5000, then refresh."}}
+function renderForecast(data){document.getElementById("chart-ticker").textContent=data.ticker;document.getElementById("chart-company").textContent=data.company_name||data.ticker;document.getElementById("model-pill").textContent=data.forecast_model;document.getElementById("price").textContent=money(data.last_close);document.getElementById("change").textContent=pct(data.expected_change_percent);document.getElementById("change").className="change"+(Number(data.expected_change_percent)<0?" down":"");const final=data.forecast[data.forecast.length-1];document.getElementById("future-price").textContent=money(final.predicted_close);document.getElementById("future-change").textContent=pct(data.expected_change_percent);document.getElementById("interval-width").textContent=money(data.average_confidence_interval_width);document.getElementById("chart-note").textContent="Solid line is actual yfinance close. Dashed line is future forecast. Shaded band is the confidence interval.";
+ const history=data.history.slice(-45);const labels=[...history.map(r=>labelDate(r.date)),...data.forecast.map(r=>labelDate(r.date))];const actual=[...history.map(r=>r.close),...data.forecast.map(()=>null)];actual[actual.length-data.forecast.length]=history[history.length-1].close;const forecast=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.predicted_close)];const upper=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.upper)];const lower=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.lower)];
+ if(chart)chart.destroy();chart=new Chart(document.getElementById("stockChart"),{type:"line",data:{labels,datasets:[{label:"Upper confidence",data:upper,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:"+1",tension:.22},{label:"Lower confidence",data:lower,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:false,tension:.22},{label:"Actual close",data:actual,borderColor:"#1f9d55",backgroundColor:"rgba(31,157,85,.08)",pointRadius:1.5,borderWidth:2,tension:.22},{label:"Forecast",data:forecast,borderColor:"#3b6fd4",borderDash:[6,5],pointRadius:2,borderWidth:2,tension:.22}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.parsed.y)}}},scales:{x:{grid:{display:false},title:{display:true,text:"Date",color:"#6b7488",font:{weight:"700"}},ticks:{maxTicksLimit:8}},y:{position:"right",grid:{color:"#eef1f6"},title:{display:true,text:"Price (USD)",color:"#6b7488",font:{weight:"700"}},ticks:{callback:v=>"$"+Number(v).toLocaleString()}}}}})}
+window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
 </body>
 </html>
