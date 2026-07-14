@@ -16,11 +16,6 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 try:
-    from openai import OpenAI
-except ModuleNotFoundError:
-    OpenAI = None
-
-try:
     from supabase import create_client
 except ModuleNotFoundError:
     create_client = None
@@ -32,11 +27,7 @@ except Exception:
 
 
 app = Flask(__name__)
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN")
-if FRONTEND_ORIGIN:
-    CORS(app, origins=[origin.strip() for origin in FRONTEND_ORIGIN.split(",")])
-else:
-    CORS(app)
+CORS(app)
 
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
@@ -378,81 +369,6 @@ def search_yfinance(query):
     return unique_results[:8]
 
 
-ASK_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
-ASK_TEMPERATURE = float(os.getenv("ASK_TEMPERATURE", "0.35"))
-ASK_MAX_TOKENS = int(os.getenv("ASK_MAX_TOKENS", "450"))
-
-STOCKSENSEI_SYSTEM_PROMPT = """
-You are StockSensei's educational assistant for a student-built stock analysis app.
-
-Allowed:
-- Explain stock market terms, app metrics, model outputs, charts, confidence, volatility, and watchlist concepts.
-- Explain how StockSensei's predictions should be interpreted for learning.
-- Give beginner-friendly research checklists and questions a user can ask before making decisions.
-- Use clear, concise language for high school or early college students.
-
-Not allowed:
-- Do not give personalized financial advice.
-- Do not tell the user to buy, sell, hold, short, or trade a specific security.
-- Do not promise returns or claim StockSensei predictions are guaranteed.
-- Do not ask for sensitive personal financial information.
-- Do not provide legal, tax, or professional investment advice.
-
-Response format:
-1. Start with a direct 1-2 sentence answer.
-2. Add 2-4 short bullet points if helpful.
-3. End with: "Educational only, not financial advice."
-"""
-
-
-def get_openai_client():
-    if OpenAI is None:
-        return None, "OpenAI package is not installed. Run: python3 -m pip install -r requirements.txt"
-
-    if not os.getenv("OPENAI_API_KEY"):
-        return None, "OPENAI_API_KEY is missing. Add it to backend/.env or your deployment environment variables."
-
-    return OpenAI(api_key=os.getenv("OPENAI_API_KEY")), None
-
-
-def answer_learn_question(question):
-    question = str(question or "").strip()
-
-    if not question:
-        return None, "Question is required.", 400
-
-    if len(question) > 900:
-        return None, "Please keep your question under 900 characters.", 400
-
-    client, setup_error = get_openai_client()
-    if setup_error:
-        return None, setup_error, 503
-
-    try:
-        response = client.responses.create(
-            model=ASK_MODEL,
-            temperature=ASK_TEMPERATURE,
-            max_output_tokens=ASK_MAX_TOKENS,
-            instructions=STOCKSENSEI_SYSTEM_PROMPT,
-            input=question
-        )
-
-        answer = getattr(response, "output_text", None)
-
-        if not answer:
-            answer = "I could not generate an answer right now. Try again with a shorter question."
-
-        return {
-            "answer": answer,
-            "model": ASK_MODEL,
-            "temperature": ASK_TEMPERATURE,
-            "max_output_tokens": ASK_MAX_TOKENS,
-            "note": "Educational only, not financial advice."
-        }, None, None
-    except Exception as error:
-        return None, f"LLM request failed: {error}", 500
-
-
 @app.route("/")
 def home():
     return jsonify({
@@ -584,18 +500,6 @@ def forecast(ticker):
     return jsonify(data)
 
 
-@app.route("/ask", methods=["POST"])
-def ask_question():
-    payload = request.get_json(silent=True) or {}
-    question = payload.get("question", "")
-    data, error, status = answer_learn_question(question)
-
-    if error:
-        return jsonify({"error": error}), status
-
-    return jsonify(data)
-
-
 @app.route("/predict/<ticker>")
 def predict(ticker):
     if not backend_ready():
@@ -673,4 +577,4 @@ def predict(ticker):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)), debug=os.getenv("FLASK_DEBUG") == "1")
+    app.run(debug=True, port=5000)

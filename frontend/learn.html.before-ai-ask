@@ -38,22 +38,11 @@
   .quiz-options{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
   .quiz-options button{border:1px solid var(--line); background:#fff; border-radius:999px; padding:10px 14px; font-weight:750; cursor:pointer;}
   #quiz-result{margin-top:12px; color:var(--muted); font-weight:700;}
-
-  .ask-box{display:grid; gap:12px; margin-top:14px;}
-  .ask-box textarea{width:100%; min-height:120px; resize:vertical; border:1px solid var(--line); border-radius:14px; padding:14px; font:inherit; color:var(--ink); outline:none; background:#fff;}
-  .ask-box textarea:focus{border-color:var(--blue); box-shadow:0 0 0 4px rgba(47,125,242,.12);}
-  .ask-actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
-  .ask-actions button{border:0; background:var(--navy); color:#fff; border-radius:12px; padding:12px 16px; font-weight:850; cursor:pointer;}
-  .ask-actions button:disabled{opacity:.62; cursor:not-allowed;}
-  .ask-status{color:var(--muted); font-size:13px; font-weight:750;}
-  .ask-answer{display:none; background:#f7f8fb; border:1px solid var(--line); border-radius:14px; padding:16px; color:var(--muted); line-height:1.55; white-space:pre-wrap;}
-  .ask-answer.visible{display:block;}
   @media(max-width:900px){.learn-layout{grid-template-columns:1fr;} .learn-nav{position:static;} .metric-grid,.workflow{grid-template-columns:1fr;}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
 </head>
 
-<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
@@ -112,7 +101,6 @@
       <a href="#risk">Risk</a>
       <a href="#workflow">Research Workflow</a>
       <a href="#quiz">Mini Quiz</a>
-      <a href="#ask">Ask AI</a>
     </aside>
 
     <div class="content-stack">
@@ -159,20 +147,6 @@
         </div>
       </section>
 
-
-      <section class="panel module" id="ask">
-        <h2>Ask StockSensei</h2>
-        <p>Ask a beginner-friendly question about metrics, model output, confidence, risk, or how to read the app. The assistant is limited to educational answers and will not give buy/sell advice.</p>
-        <div class="ask-box">
-          <textarea id="ask-question" maxlength="900" placeholder="Example: What does high volatility mean on the Predict page?"></textarea>
-          <div class="ask-actions">
-            <button id="ask-submit" type="button" onclick="askStockSensei()">Submit Question</button>
-            <span class="ask-status" id="ask-status">Backend must be running on port 5000.</span>
-          </div>
-          <div class="ask-answer" id="ask-answer"></div>
-        </div>
-      </section>
-
       <section class="panel module" id="quiz">
         <h2>Mini check</h2>
         <p>If a stock has a low confidence prediction and high volatility, how should you treat it?</p>
@@ -196,59 +170,6 @@
   </div>
 </footer>
 <script>
-
-  const ASK_API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
-
-  async function askBackend(question){
-    let lastError = "Backend unavailable";
-    for (const base of ASK_API_BASES) {
-      try {
-        const response = await fetch(base + "/ask", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({question})
-        });
-        const data = await response.json();
-        if (response.ok) return data;
-        lastError = data.error || response.statusText;
-      } catch (error) {
-        lastError = error.message;
-      }
-    }
-    throw new Error(lastError);
-  }
-
-  async function askStockSensei(){
-    const input = document.getElementById("ask-question");
-    const button = document.getElementById("ask-submit");
-    const status = document.getElementById("ask-status");
-    const answerBox = document.getElementById("ask-answer");
-    const question = input.value.trim();
-
-    if (!question) {
-      status.textContent = "Type a question first.";
-      answerBox.classList.remove("visible");
-      return;
-    }
-
-    button.disabled = true;
-    status.textContent = "Thinking...";
-    answerBox.classList.remove("visible");
-
-    try {
-      const data = await askBackend(question);
-      answerBox.textContent = data.answer;
-      answerBox.classList.add("visible");
-      status.textContent = `Answered by ${data.model}.`;
-    } catch (error) {
-      answerBox.textContent = error.message;
-      answerBox.classList.add("visible");
-      status.textContent = "Could not get an answer.";
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   function checkQuiz(correct){
     document.getElementById("quiz-result").textContent = correct
       ? "Correct. Low confidence plus high volatility should be treated carefully."
