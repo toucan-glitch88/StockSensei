@@ -53,7 +53,6 @@
 <link rel="stylesheet" href="shared-nav.css">
 </head>
 
-<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
@@ -197,7 +196,7 @@
 </footer>
 <script>
 
-  const ASK_API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
+  const ASK_API_BASES = ["http://127.0.0.1:5000", "http://localhost:5000"];
 
   async function askBackend(question){
     let lastError = "Backend unavailable";
