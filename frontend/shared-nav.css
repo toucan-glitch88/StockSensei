@@ -590,3 +590,39 @@ color:green;
 color:red;
 
 }
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+#stockSearch {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+}
+
+#stockSearch:focus {
+    border-color: #2563eb;
+}
+
+#searchBtn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#searchBtn:hover {
+    background: #1d4ed8;
+}
