@@ -1,0 +1,11 @@
+flask
+flask-cors
+pandas
+joblib
+yfinance
+scikit-learn
+supabase
+python-dotenv
+statsmodels
+openai
+gunicorn
