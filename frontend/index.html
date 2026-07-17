@@ -3,35 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StockSensei - AI Stock Predictions</title>
-<script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Stock Sensei — AI Stock Predictions</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root{
-    --navy:#1b2340;
+    --navy:#0f2a4a;
     --blue:#3b6fd4;
     --blue-light:#eaf0fc;
     --bg:#eef1fb;
     --card:#ffffff;
     --green:#1f9d55;
     --green-bg:#e5f7ec;
-    --red:#d0453c;
     --text:#1b2333;
     --muted:#6b7488;
     --border:#e2e6f2;
     --yellow-bg:#fdf6d8;
     --yellow-border:#f0dd8a;
   }
-
   *{box-sizing:border-box;}
-
   body{
     margin:0;
     font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     background:var(--bg);
     color:var(--text);
   }
-
   main{
     max-width:1200px;
     margin:0 auto;
@@ -41,26 +36,21 @@
     gap:40px;
     align-items:start;
   }
-
   .hero h1{
     font-size:48px;
     line-height:1.15;
     margin:0 0 18px;
     color:var(--navy);
     text-decoration:underline;
+    text-decoration-color:var(--navy);
     font-weight:700;
   }
-
   .hero p{
     color:var(--muted);
     font-size:16px;
     margin:0 0 24px;
   }
-
-  .search-wrap{
-    margin-bottom:24px;
-  }
-
+  .search-wrap{margin-bottom:24px;}
   .search-wrap input{
     width:100%;
     padding:14px 18px;
@@ -70,18 +60,15 @@
     font-size:14px;
     outline:none;
   }
-
   .search-wrap input:focus{
     border-color:var(--blue);
     box-shadow:0 0 0 3px rgba(59,111,212,0.15);
   }
-
   .quick-links{
     display:flex;
     flex-direction:column;
     gap:14px;
   }
-
   .predict-btn{
     display:flex;
     align-items:center;
@@ -95,67 +82,26 @@
     text-align:left;
     width:fit-content;
     min-width:220px;
+    transition:transform .12s ease, box-shadow .12s ease;
   }
-
   .predict-btn:hover{
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(15,42,74,0.25);
   }
-
   .predict-btn .icon{
     background:rgba(255,255,255,0.15);
     border-radius:10px;
-    width:38px;
-    height:38px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    width:38px;height:38px;
+    display:flex;align-items:center;justify-content:center;
     font-size:18px;
   }
-
-  .predict-btn .label{
-    font-weight:700;
-    font-size:14px;
-  }
-
-  .predict-btn .sub{
-    font-size:12px;
-    opacity:0.8;
-  }
-
-  #prediction-result{
-    margin-top:16px;
-  }
-
-  .result-card{
-    background:white;
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:16px;
-    box-shadow:0 8px 20px rgba(30,40,90,0.08);
-  }
-
-  .result-card h3{
-    margin:0 0 10px;
-    color:var(--navy);
-  }
-
-  .result-card p{
-    margin:8px 0;
-    color:var(--text);
-    font-size:14px;
-  }
-
-  .result-card em{
-    color:var(--muted);
-    font-size:13px;
-  }
+  .predict-btn .label{font-weight:700;font-size:14px;}
+  .predict-btn .sub{font-size:12px;opacity:0.8;font-weight:400;}
 
   .row-links{
     display:flex;
     gap:16px;
   }
-
   .link-card{
     flex:1;
     background:#fff;
@@ -167,92 +113,65 @@
     align-items:flex-start;
     cursor:pointer;
     text-align:left;
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   }
-
   .link-card:hover{
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(30,40,80,0.10);
     border-color:var(--blue);
   }
-
   .link-card .icon{
-    width:34px;
-    height:34px;
+    width:34px;height:34px;
     border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex;align-items:center;justify-content:center;
     font-size:16px;
     flex-shrink:0;
   }
+  .link-card.watchlist .icon{background:#e6f7ee;color:var(--green);}
+  .link-card.explore .icon{background:#fdecd6;color:#e08a2b;}
+  .link-card.learn .icon{background:#e9e6fb;color:#6a4fd6;}
+  .link-card .label{font-weight:700;font-size:14px;margin-bottom:2px;}
+  .link-card .sub{font-size:12px;color:var(--muted);}
 
-  .link-card.watchlist .icon{
-    background:#e6f7ee;
-    color:var(--green);
-  }
-
-  .link-card.explore .icon{
-    background:#fdecd6;
-    color:#e08a2b;
-  }
-
-  .link-card.learn .icon{
-    background:#e9e6fb;
-    color:#6a4fd6;
-  }
-
-  .link-card .label{
-    font-weight:700;
-    font-size:14px;
-    margin-bottom:2px;
-  }
-
-  .link-card .sub{
-    font-size:12px;
-    color:var(--muted);
-  }
-
+  /* Chart card */
   .stock-card{
     background:var(--card);
     border-radius:20px;
     padding:24px;
     box-shadow:0 10px 30px rgba(30,40,90,0.08);
   }
-
+  .stock-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:6px;
+  }
   .ticker-name{
     font-weight:800;
     font-size:15px;
     color:var(--navy);
   }
-
   .company-name{
     font-size:12px;
     color:var(--muted);
   }
-
   .price-row{
     display:flex;
     align-items:baseline;
     gap:10px;
     margin:8px 0 12px;
   }
-
   .price{
     font-size:30px;
     font-weight:800;
     color:var(--text);
   }
-
   .change{
     font-size:14px;
     font-weight:700;
     color:var(--green);
   }
-
-  .change.down{
-    color:var(--red);
-  }
-
+  .change.down{color:#d0453c;}
   .prediction-badge{
     display:inline-flex;
     align-items:center;
@@ -265,19 +184,16 @@
     border-radius:20px;
     margin-bottom:16px;
   }
-
   .prediction-badge.bearish{
     background:#fbe9e8;
-    color:var(--red);
+    color:#d0453c;
   }
-
   .range-buttons{
     display:flex;
     gap:6px;
     justify-content:flex-end;
     margin-bottom:10px;
   }
-
   .range-buttons button{
     border:none;
     background:transparent;
@@ -287,17 +203,13 @@
     padding:6px 10px;
     border-radius:8px;
     cursor:pointer;
+    transition:background .12s ease, color .12s ease;
   }
-
-  .range-buttons button:hover{
-    background:#f1f3fb;
-  }
-
+  .range-buttons button:hover{background:#f1f3fb;}
   .range-buttons button.active{
     background:var(--blue-light);
     color:var(--blue);
   }
-
   .chart-wrap{
     position:relative;
     height:220px;
@@ -308,7 +220,6 @@
     margin:10px auto 40px;
     padding:16px 40px;
   }
-
   .disclaimer-inner{
     background:var(--yellow-bg);
     border:1px solid var(--yellow-border);
@@ -318,100 +229,260 @@
     gap:10px;
     align-items:flex-start;
   }
-
-  .disclaimer-inner p{
-    margin:2px 0 0;
-    font-size:13px;
-    color:var(--muted);
-  }
+  .disclaimer-inner .emoji{font-size:16px;}
+  .disclaimer-inner b{font-size:14px;}
+  .disclaimer-inner p{margin:2px 0 0;font-size:13px;color:var(--muted);}
 
   @media (max-width:860px){
-    main{
-      grid-template-columns:1fr;
-    }
-
-    .hero h1{
-      font-size:36px;
-    }
-
-    .row-links{
-      flex-direction:column;
-    }
+    main{grid-template-columns:1fr;}
+    .hero h1{font-size:36px;}
+    .row-links{flex-direction:column;}
   }
 </style>
+<link rel="stylesheet" href="frontend/shared-nav.css">
 </head>
 <body>
 
-<header>
-  <a class="logo" href="index.html" aria-label="StockSensei home">
-    <img class="brand-logo" src="assets/stocksensei-logo-clean.png" alt="StockSensei">
+<header class="site-header">
+  <a class="site-brand" href="frontend/index.html" aria-label="StockSensei home">
+    <span class="site-brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" role="img">
+        <path d="M14 48c4-16 10-25 18-27 9 2 15 11 18 27-9 7-27 7-36 0Z" fill="#12365d"/>
+        <path d="M18 49c5-12 9-19 14-22 5 3 10 10 14 22-8 4-20 4-28 0Z" fill="#2f7df2" opacity=".8"/>
+        <path d="M19 31c4-8 9-12 13-12s9 4 13 12c-6 6-20 6-26 0Z" fill="#f0c8a3"/>
+        <path d="M22 33c5 5 15 5 20 0-1 7-5 13-10 13s-9-6-10-13Z" fill="#edf2f7"/>
+        <path d="M19 29c6-4 20-4 26 0-2-9-7-15-13-15s-11 6-13 15Z" fill="#d6dee8"/>
+        <path d="M25 20c-2-8 12-8 14 0-4 3-10 3-14 0Z" fill="#9fb3c8"/>
+        <path d="M23 14c3-8 15-8 18 0-4 5-14 5-18 0Z" fill="#c8d4df"/>
+        <path d="M23 31c6 3 12 3 18 0M25 36c5 3 9 3 14 0" fill="none" stroke="#0f2238" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 46c9 2 16-1 20-8M56 46c-9 2-16-1-20-8" fill="none" stroke="#0f2238" stroke-width="4" stroke-linecap="round"/>
+        <path d="M7 18h4v27H7zM15 10h4v32h-4zM47 10h4v32h-4zM55 18h4v27h-4z" fill="#d9edf9" stroke="#0f2238" stroke-width="2"/>
+        <path d="M15 23h4v16h-4zM47 23h4v16h-4z" fill="#2f7df2"/>
+      </svg>
+    </span>
+    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
   </a>
 
-  <nav>
-   <div class="search-container">
-    <input
-        type="text"
-        id="stockSearch"
-        placeholder="Search stocks (e.g. AAPL or Apple)"
-    >
-
-    <button id="searchBtn">
-        Search
-    </button>
-  </div>
-  <a href="index.html" class="active">Home</a>
-  <a href="Predict.html">Predict</a>
-  <a href="learn.html">Learn</a>
-  <a href="watchlist.html">Watchlist</a>
-  <a href="explore.html">Explore</a>
-  <a href="About.html">About Us</a>
-</nav>
-
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="frontend/index.html" class="active">Home</a>
+    <a href="frontend/Predict.html">Predict</a>
+    <a href="frontend/learn.html">Learn</a>
+    <a href="frontend/watchlist.html">Watchlist</a>
+    <a href="frontend/explore.html">Explore</a>
+    <a href="frontend/About.html">About Us</a>
+  </nav>
 </header>
+
 <main>
-  <section class="hero">
-    <h1>Live stock research with future price forecasts.</h1>
-    <p>Search any public ticker or company name. StockSensei pulls real Yahoo Finance data through your backend and draws a future forecast with confidence intervals.</p>
-    <div class="search-area">
-      <div class="search-row"><input id="stock-search" type="text" placeholder="Search Apple, NVDA, Tesla, Spotify..."><button onclick="goPredict()">Predict</button></div>
-      <div class="search-results" id="search-results"></div>
+  <div class="hero">
+    <h1>Learn.<br>Predict.<br>Understand.</h1>
+    <p>Ai-powered stock predictions designed to help beginners</p>
+
+    <div class="search-wrap">
+      <input type="text" placeholder="Search for stocks (e.g., AAPL, MSFT, TSLA)" />
     </div>
-    <div class="actions"><button class="action primary" onclick="goPredict()">Open prediction</button><button class="action" onclick="window.location.href='learn.html'">Learn metrics</button><button class="action" onclick="window.location.href='watchlist.html'">Watchlist</button></div>
-  </section>
-  <section class="stock-card">
-    <div class="card-top"><div><div class="ticker-name" id="chart-ticker">AAPL</div><div class="company-name" id="chart-company">Loading from yfinance...</div></div><div class="model-pill" id="model-pill">Forecast</div></div>
-    <div class="price-row"><div class="price" id="price">$--</div><div class="change" id="change">Loading...</div></div>
-    <div class="chart-wrap"><canvas id="stockChart"></canvas></div>
-    <div class="forecast-summary">
-      <div class="metric"><span>10-day estimate</span><strong id="future-price">--</strong></div>
-      <div class="metric"><span>Expected move</span><strong id="future-change">--</strong></div>
-      <div class="metric"><span>Interval width</span><strong id="interval-width">--</strong></div>
+
+    <div class="quick-links">
+      <button class="predict-btn" onclick="sendPrompt('Open Predict — get an AI prediction for a stock')">
+        <span class="icon">📈</span>
+        <span>
+          <div class="label">Predict</div>
+          <div class="sub">Get AI-powered stock predictions</div>
+        </span>
+      </button>
+
+      <div class="row-links">
+        <button class="link-card watchlist" onclick="sendPrompt('Open Watchlist — track my favorite stocks')">
+          <span class="icon">★</span>
+          <span>
+            <div class="label">Watchlist</div>
+            <div class="sub">Track your favorite stocks</div>
+          </span>
+        </button>
+        <button class="link-card explore" onclick="sendPrompt('Open Explore — discover sectors and top movers')">
+          <span class="icon">🧭</span>
+          <span>
+            <div class="label">Explore</div>
+            <div class="sub">Discover sectors, top movers, and more.</div>
+          </span>
+        </button>
+        <button class="link-card learn" onclick="sendPrompt('Open Learn — understand stocks and predictions')">
+          <span class="icon">🎓</span>
+          <span>
+            <div class="label">Learn</div>
+            <div class="sub">Understand stocks and how predictions work.</div>
+          </span>
+        </button>
+      </div>
     </div>
-    <p class="chart-note" id="chart-note">Loading actual history and forecast from Flask.</p>
-  </section>
+  </div>
+
+  <div class="stock-card">
+    <div class="stock-top">
+      <div>
+        <div class="ticker-name">AAPL</div>
+        <div class="company-name">Apple Inc.</div>
+      </div>
+    </div>
+    <div class="price-row">
+      <div class="price" id="price">175.43</div>
+      <div class="change" id="change">+2.35 (1.36%)</div>
+    </div>
+    <div class="prediction-badge" id="prediction-badge">AI Prediction: Bullish ↑</div>
+
+    <div class="range-buttons" id="range-buttons">
+      <button data-range="1D">1D</button>
+      <button data-range="1W">1W</button>
+      <button data-range="1M" class="active">1M</button>
+      <button data-range="3M">3M</button>
+      <button data-range="1Y">1Y</button>
+      <button data-range="ALL">ALL</button>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="stockChart"></canvas>
+    </div>
+  </div>
 </main>
-<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div></div></footer>
+
+<div class="disclaimer">
+  <div class="disclaimer-inner">
+    <span class="emoji">⚠️</span>
+    <div>
+      <b>Education Only Disclaimer</b>
+      <p>Stock Sensei is an educational tool designed to help you learn about the stock market. It is not financial advice.</p>
+    </div>
+  </div>
+</div>
+
 <script>
-const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000"].filter(Boolean);let chart;let selectedTicker="AAPL";let searchTimer;
-async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
-function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
-function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
-function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
-function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}
-async function goPredict(){const q=cleanQuery(document.getElementById("stock-search").value||selectedTicker);if(!q)return;window.location.href="Predict.html?ticker="+encodeURIComponent(q)}
-function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}
-function chooseResult(symbol){selectedTicker=symbol;document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";loadForecast(symbol)}
-document.getElementById("stock-search").addEventListener("input",()=>{clearTimeout(searchTimer);const q=document.getElementById("stock-search").value.trim();if(q.length<2){showResults([]);return}searchTimer=setTimeout(async()=>{try{const data=await fetchJson("/search/"+encodeURIComponent(q));showResults(data.results||[])}catch(e){showResults([])}},350)});
-document.getElementById("stock-search").addEventListener("keydown",e=>{if(e.key==="Enter")goPredict()});
-async function loadForecast(ticker){selectedTicker=ticker;document.getElementById("chart-note").textContent="Loading "+ticker+" from yfinance...";try{const data=await fetchJson("/forecast/"+encodeURIComponent(ticker)+"?days=10");renderForecast(data)}catch(e){document.getElementById("chart-note").textContent="Could not load backend forecast. Start Flask on port 5000, then refresh."}}
-function renderForecast(data){document.getElementById("chart-ticker").textContent=data.ticker;document.getElementById("chart-company").textContent=data.company_name||data.ticker;document.getElementById("model-pill").textContent=data.forecast_model;document.getElementById("price").textContent=money(data.last_close);document.getElementById("change").textContent=pct(data.expected_change_percent);document.getElementById("change").className="change"+(Number(data.expected_change_percent)<0?" down":"");const final=data.forecast[data.forecast.length-1];document.getElementById("future-price").textContent=money(final.predicted_close);document.getElementById("future-change").textContent=pct(data.expected_change_percent);document.getElementById("interval-width").textContent=money(data.average_confidence_interval_width);document.getElementById("chart-note").textContent="Solid line is actual yfinance close. Dashed line is future forecast. Shaded band is the confidence interval.";
- const history=data.history.slice(-45);const labels=[...history.map(r=>labelDate(r.date)),...data.forecast.map(r=>labelDate(r.date))];const actual=[...history.map(r=>r.close),...data.forecast.map(()=>null)];actual[actual.length-data.forecast.length]=history[history.length-1].close;const forecast=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.predicted_close)];const upper=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.upper)];const lower=[...history.slice(0,-1).map(()=>null),history[history.length-1].close,...data.forecast.map(r=>r.lower)];
- if(chart)chart.destroy();chart=new Chart(document.getElementById("stockChart"),{type:"line",data:{labels,datasets:[{label:"Upper confidence",data:upper,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:"+1",tension:.22},{label:"Lower confidence",data:lower,borderColor:"rgba(59,111,212,0)",backgroundColor:"rgba(59,111,212,.12)",pointRadius:0,fill:false,tension:.22},{label:"Actual close",data:actual,borderColor:"#1f9d55",backgroundColor:"rgba(31,157,85,.08)",pointRadius:1.5,borderWidth:2,tension:.22},{label:"Forecast",data:forecast,borderColor:"#3b6fd4",borderDash:[6,5],pointRadius:2,borderWidth:2,tension:.22}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.parsed.y)}}},scales:{x:{grid:{display:false},title:{display:true,text:"Date",color:"#6b7488",font:{weight:"700"}},ticks:{maxTicksLimit:8}},y:{position:"right",grid:{color:"#eef1f6"},title:{display:true,text:"Price (USD)",color:"#6b7488",font:{weight:"700"}},ticks:{callback:v=>"$"+Number(v).toLocaleString()}}}}})}
-window.addEventListener("load",()=>loadForecast("AAPL"));
+// ---- Generate realistic-looking AAPL price series per range ----
+function generateSeries(range){
+  const configs = {
+    '1D': {points:24, step:'hour', start:173.5, vol:0.35, label:h=>`${h}:00`},
+    '1W': {points:7,  step:'day',  start:170,   vol:1.2,  label:null},
+    '1M': {points:22, step:'day',  start:163,   vol:1.6,  label:null},
+    '3M': {points:65, step:'day',  start:150,   vol:2.0,  label:null},
+    '1Y': {points:52, step:'week', start:130,   vol:3.0,  label:null},
+    'ALL':{points:60, step:'month',start:40,    vol:4.5,  label:null},
+  };
+  const cfg = configs[range];
+  let price = cfg.start;
+  const data = [];
+  const labels = [];
+  const today = new Date();
+
+  // seeded pseudo-random for consistent "trend up" look like screenshot
+  let seed = 42;
+  function rand(){
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  }
+
+  for(let i=0;i<cfg.points;i++){
+    const drift = 0.35; // slight upward bias, matches screenshot's uptrend
+    const noise = (rand()-0.5) * cfg.vol;
+    price = Math.max(1, price + drift + noise);
+    data.push(Math.round(price*100)/100);
+
+    const d = new Date(today);
+    if(cfg.step==='hour') d.setHours(d.getHours() - (cfg.points-i));
+    if(cfg.step==='day')  d.setDate(d.getDate() - (cfg.points-i));
+    if(cfg.step==='week') d.setDate(d.getDate() - (cfg.points-i)*7);
+    if(cfg.step==='month')d.setMonth(d.getMonth() - (cfg.points-i));
+
+    if(cfg.step==='hour'){
+      labels.push(d.getHours()+':00');
+    } else if(cfg.step==='month'){
+      labels.push(d.toLocaleDateString('en-US',{month:'short',year:'2-digit'}));
+    } else {
+      labels.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+    }
+  }
+  return {labels, data};
+}
+
+let chart;
+function renderChart(range){
+  const {labels, data} = generateSeries(range);
+  const first = data[0];
+  const last = data[data.length-1];
+  const diff = last - first;
+  const pct = (diff/first*100).toFixed(2);
+  const isUp = diff >= 0;
+
+  document.getElementById('price').textContent = last.toFixed(2);
+  const changeEl = document.getElementById('change');
+  changeEl.textContent = `${isUp?'+':''}${diff.toFixed(2)} (${isUp?'+':''}${pct}%)`;
+  changeEl.className = 'change' + (isUp?'':' down');
+
+  const badge = document.getElementById('prediction-badge');
+  badge.textContent = isUp ? 'AI Prediction: Bullish ↑' : 'AI Prediction: Bearish ↓';
+  badge.className = 'prediction-badge' + (isUp?'':' bearish');
+
+  const lineColor = isUp ? '#1f9d55' : '#d0453c';
+  const fillColor = isUp ? 'rgba(31,157,85,0.08)' : 'rgba(208,69,60,0.08)';
+
+  const ctx = document.getElementById('stockChart').getContext('2d');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        data,
+        borderColor:lineColor,
+        backgroundColor:fillColor,
+        borderWidth:2,
+        pointRadius:0,
+        pointHoverRadius:4,
+        pointHoverBackgroundColor:lineColor,
+        fill:true,
+        tension:0.35,
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{intersect:false, mode:'index'},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#0f2a4a',
+          padding:10,
+          titleFont:{size:11},
+          bodyFont:{size:12, weight:'bold'},
+          callbacks:{
+            title:(items)=>items[0].label,
+            label:(item)=>'$'+item.formattedValue
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{display:false},
+          ticks:{color:'#6b7488', font:{size:11}, maxTicksLimit:6}
+        },
+        y:{
+          position:'right',
+          grid:{color:'#f0f2f9'},
+          ticks:{color:'#6b7488', font:{size:11}, callback:v=>v}
+        }
+      }
+    }
+  });
+}
+
+document.getElementById('range-buttons').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('#range-buttons button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderChart(btn.dataset.range);
+});
+
+renderChart('1M');
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="session.js"></script>
 </body>
 </html>
