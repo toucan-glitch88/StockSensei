@@ -286,12 +286,23 @@
   </a>
 
   <nav class="site-nav" aria-label="Main navigation">
-    <a href="index.html" class="active">Home</a>
+    <div class="search-container">
+        <input
+            type="text"
+            id="stockSearch"
+            placeholder="Search stocks (e.g. AAPL or Apple)"
+        >
+
+        <button id="searchBtn">
+            Search
+        </button>
+    </div>
+    <a href="index.html"</a>
       <a href="Predict.html">Predict</a>
       <a href="learn.html">Learn</a>
       <a href="watchlist.html">Watchlist</a>
       <a href="explore.html">Explore</a>
-      <a href="About.html">About Us</a>
+      <a href="About.html" class="active">About Us</a>
 
       <div id="userArea"></div>
   </nav>
