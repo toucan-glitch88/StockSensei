@@ -5,3 +5,6 @@ __pycache__/
 *.csv
 .ipynb_checkpoints/
 backend/.env
+.DS_Store
+*.before-*
+*.pyc

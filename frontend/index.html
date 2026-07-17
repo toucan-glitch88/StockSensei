@@ -28,6 +28,8 @@
   @media(max-width:860px){main{grid-template-columns:1fr;padding:30px 18px}.hero h1{font-size:34px}.forecast-summary{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <header class="site-header">
@@ -79,9 +81,9 @@
     <p class="chart-note" id="chart-note">Loading actual history and forecast from Flask.</p>
   </section>
 </main>
-<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div></div></footer>
+<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div></div></footer>
 <script>
-const API_BASES=["http://127.0.0.1:5000","http://localhost:5000"];let chart;let selectedTicker="AAPL";let searchTimer;
+const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000"].filter(Boolean);let chart;let selectedTicker="AAPL";let searchTimer;
 async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
 function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
 function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
@@ -99,7 +101,6 @@ function renderForecast(data){document.getElementById("chart-ticker").textConten
 window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <script src="session.js"></script>
 </body>

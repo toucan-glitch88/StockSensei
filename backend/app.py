@@ -31,14 +31,14 @@ except Exception:
     ARIMA = None
 
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
 app = Flask(__name__)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN")
 if FRONTEND_ORIGIN:
-    CORS(app, origins=[origin.strip() for origin in FRONTEND_ORIGIN.split(",")])
+    CORS(app, origins=[origin.strip() for origin in FRONTEND_ORIGIN.split(",") if origin.strip()])
 else:
     CORS(app)
-
-load_dotenv(Path(__file__).resolve().parent / ".env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = (
@@ -465,7 +465,8 @@ def home():
             "/live/<ticker>",
             "/history/<ticker>",
             "/predict/<ticker>",
-            "/forecast/<ticker>?days=10"
+            "/forecast/<ticker>?days=10",
+            "/ask"
         ],
         "note": "For educational use only. Not financial advice."
     })
