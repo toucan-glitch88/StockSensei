@@ -246,6 +246,7 @@
   }
 </style>
 <link rel="stylesheet" href="shared-nav.css">
+<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -280,25 +281,13 @@
   </a>
 
   <nav class="site-nav" aria-label="Main navigation">
-    <div class="search-container">
-        <input
-            type="text"
-            id="stockSearch"
-            placeholder="Search stocks (e.g. AAPL or Apple)"
-        >
-
-        <button id="searchBtn">
-            Search
-        </button>
-    </div>
-    <a href="index.html"</a>
-      <a href="Predict.html">Predict</a>
-      <a href="learn.html">Learn</a>
-      <a href="watchlist.html">Watchlist</a>
-      <a href="explore.html">Explore</a>
-      <a href="About.html" class="active">About Us</a>
-
-      <div id="userArea"></div>
+    <a href="index.html">Home</a>
+    <a href="Predict.html">Predict</a>
+    <a href="learn.html">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html">Explore</a>
+    <a href="About.html" class="active">About Us</a>
+    <div id="userArea"></div>
   </nav>
 </header>
 
@@ -409,6 +398,7 @@
 </section>
 
 <script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

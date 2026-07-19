@@ -23,6 +23,7 @@
   @media(max-width:980px){main{grid-template-columns:1fr}.details{grid-template-columns:repeat(2,1fr)}.top-grid,.expanded-layout{grid-template-columns:1fr}}@media(max-width:560px){main{width:min(100% - 24px,1220px)}.stock-header{display:block}.expand-btn{margin-top:16px}.details,.forecast-grid{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
+<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -51,7 +52,14 @@
         <path class="logo-sparkline" d="M7 45 L17 45 L24 35 L31 39 L39 25 L47 30 L57 16" />
       </svg>
     </span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
-  <nav class="site-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="Predict.html" class="active">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a>  <div id="userArea"></div>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="Predict.html" class="active">Predict</a>
+    <a href="learn.html">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html">Explore</a>
+    <a href="About.html">About Us</a>
+    <div id="userArea"></div>
   </nav>
 </header>
 <main>
@@ -77,10 +85,11 @@
 <script>
 const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000"].filter(Boolean);let chart;let expandedChart;let lastForecastData;let searchTimer;
 async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+async function resolveTickerFromBackend(value){const q=cleanQuery(value);if(!q)return"";try{const data=await fetchJson("/resolve/"+encodeURIComponent(q));return data.ticker||q}catch(e){return q}}
 function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":"$"+Number(v).toFixed(2)}function percent(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":Number(v).toFixed(2)+"%"}function signedPercent(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":(Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}function num(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":Number(v).toLocaleString()}function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}function setStatus(m){document.getElementById("status-message").innerHTML=m}
 function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}function chooseResult(symbol){document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";selectStock(symbol)}
 document.getElementById("stock-search").addEventListener("input",()=>{clearTimeout(searchTimer);const q=document.getElementById("stock-search").value.trim();if(q.length<2){showResults([]);return}searchTimer=setTimeout(async()=>{try{const data=await fetchJson("/search/"+encodeURIComponent(q));showResults(data.results||[])}catch(e){showResults([])}},350)});document.getElementById("stock-search").addEventListener("keydown",e=>{if(e.key==="Enter")searchStock()});
-function searchStock(){const q=cleanQuery(document.getElementById("stock-search").value);if(!q){alert("Search a company or ticker first.");return}selectStock(q)}
+async function searchStock(){const q=await resolveTickerFromBackend(document.getElementById("stock-search").value);if(!q){alert("Search a company or ticker first.");return}document.getElementById("stock-search").value=q;selectStock(q)}
 async function selectStock(ticker){setLoading(ticker);try{const [live,pred,forecast]=await Promise.all([fetchJson("/live/"+encodeURIComponent(ticker)),fetchJson("/predict/"+encodeURIComponent(ticker)),fetchJson("/forecast/"+encodeURIComponent(ticker)+"?days=10")]);updateSummary(live);updatePrediction(pred);renderForecast(forecast);setStatus("<strong>Loaded:</strong> "+forecast.ticker+" using actual yfinance history and future forecast bands.")}catch(e){setError(e.message||"Could not connect to backend. Make sure Flask is running on port 5000.")}}
 function setLoading(t){document.getElementById("selected-ticker").textContent=t;document.getElementById("selected-logo").textContent=t.charAt(0).toUpperCase();document.getElementById("selected-company").textContent="Loading yfinance data...";document.getElementById("selected-price").textContent="Loading...";document.getElementById("selected-date").textContent="Getting live data, prediction, and forecast...";document.getElementById("prediction-value").textContent="Loading";document.getElementById("prediction-icon").textContent="⏳";document.getElementById("confidence-percent").textContent="--%";document.getElementById("confidence-fill").style.width="0%";setStatus("<strong>Loading:</strong> "+t+"...")}
 function setError(m){setStatus("<strong>Error:</strong> "+m);document.getElementById("selected-company").textContent="Could not load stock data";document.getElementById("selected-price").textContent="$--";document.getElementById("selected-date").textContent="Check Flask, dependencies, or ticker symbol";document.getElementById("prediction-value").textContent="Error";document.getElementById("prediction-icon").textContent="⚠️"}
@@ -90,10 +99,11 @@ function chartConfig(data){const history=data.history.slice(-60);const labels=[.
 function renderForecast(data){lastForecastData=data;document.getElementById("forecast-model").textContent=data.forecast_model;const final=data.forecast[data.forecast.length-1];document.getElementById("future-price").textContent=money(final.predicted_close);document.getElementById("future-change").textContent=signedPercent(data.expected_change_percent);document.getElementById("interval-width").textContent=money(data.average_confidence_interval_width);if(chart)chart.destroy();chart=new Chart(document.getElementById("forecastChart"),chartConfig(data));syncExpandedView()}
 function syncExpandedView(){const g=id=>document.getElementById(id);g("expanded-title").textContent=g("selected-ticker").textContent+" Expanded Forecast";g("expanded-subtitle").textContent=g("selected-company").textContent;g("expanded-ticker").textContent=g("selected-ticker").textContent;g("expanded-price").textContent=g("selected-price").textContent;g("expanded-prediction").textContent=g("prediction-value").textContent;g("expanded-confidence").textContent=g("confidence-percent").textContent;g("expanded-model").textContent=g("forecast-model").textContent;g("expanded-future").textContent=g("future-price").textContent;g("expanded-risk").textContent=g("risk-level").textContent;g("expanded-risk-text").textContent=g("risk-explanation").textContent}
 function openExpandedView(){syncExpandedView();document.getElementById("expanded-overlay").classList.add("open");setTimeout(()=>{if(!lastForecastData)return;if(expandedChart)expandedChart.destroy();expandedChart=new Chart(document.getElementById("expandedChart"),chartConfig(lastForecastData))},50)}function closeExpandedView(event){if(event&&event.target.id!=="expanded-overlay")return;document.getElementById("expanded-overlay").classList.remove("open")}
-const initialParams=new URLSearchParams(window.location.search);const initialTicker=initialParams.get("ticker");if(initialTicker){document.getElementById("stock-search").value=initialTicker;selectStock(cleanQuery(initialTicker))}
+const initialParams=new URLSearchParams(window.location.search);const initialTicker=initialParams.get("ticker");if(initialTicker){document.getElementById("stock-search").value=initialTicker;resolveTickerFromBackend(initialTicker).then(ticker=>{document.getElementById("stock-search").value=ticker;selectStock(ticker);})}
 </script>
 
 <script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

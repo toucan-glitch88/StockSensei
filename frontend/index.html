@@ -28,6 +28,7 @@
   @media(max-width:860px){main{grid-template-columns:1fr;padding:30px 18px}.hero h1{font-size:34px}.forecast-summary{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
+<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -56,7 +57,14 @@
         <path class="logo-sparkline" d="M7 45 L17 45 L24 35 L31 39 L39 25 L47 30 L57 16" />
       </svg>
     </span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
-  <nav class="site-nav" aria-label="Main navigation"><a href="index.html" class="active">Home</a><a href="Predict.html">Predict</a><a href="learn.html">Learn</a><a href="watchlist.html">Watchlist</a><a href="explore.html">Explore</a><a href="About.html">About Us</a>  <div id="userArea"></div>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="index.html" class="active">Home</a>
+    <a href="Predict.html">Predict</a>
+    <a href="learn.html">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html">Explore</a>
+    <a href="About.html">About Us</a>
+    <div id="userArea"></div>
   </nav>
 </header>
 <main>
@@ -85,11 +93,12 @@
 <script>
 const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000"].filter(Boolean);let chart;let selectedTicker="AAPL";let searchTimer;
 async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+async function resolveTickerFromBackend(value){const q=cleanQuery(value);if(!q)return"";try{const data=await fetchJson("/resolve/"+encodeURIComponent(q));return data.ticker||q}catch(e){return q}}
 function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
 function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
 function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
 function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}
-async function goPredict(){const q=cleanQuery(document.getElementById("stock-search").value||selectedTicker);if(!q)return;window.location.href="Predict.html?ticker="+encodeURIComponent(q)}
+async function goPredict(){const q=await resolveTickerFromBackend(document.getElementById("stock-search").value||selectedTicker);if(!q)return;window.location.href="Predict.html?ticker="+encodeURIComponent(q)}
 function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}
 function chooseResult(symbol){selectedTicker=symbol;document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";loadForecast(symbol)}
 document.getElementById("stock-search").addEventListener("input",()=>{clearTimeout(searchTimer);const q=document.getElementById("stock-search").value.trim();if(q.length<2){showResults([]);return}searchTimer=setTimeout(async()=>{try{const data=await fetchJson("/search/"+encodeURIComponent(q));showResults(data.results||[])}catch(e){showResults([])}},350)});
@@ -102,6 +111,7 @@ window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
 
 <script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>
