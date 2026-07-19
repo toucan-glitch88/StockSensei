@@ -130,15 +130,10 @@
 
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-</head>
-
+<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="session.js"></script>
-
+</head>
 <body>
 <header class="site-header">
   <a class="site-brand" href="index.html" aria-label="StockSensei home">
@@ -172,10 +167,9 @@
     <a href="index.html">Home</a>
     <a href="Predict.html">Predict</a>
     <a href="learn.html">Learn</a>
-    <a href="watchlist.html">Watchlist</a>
-    <a href="explore.html" class="active">Explore</a>
+    <a href="watchlist.html" class="active">Watchlist</a>
+    <a href="explore.html">Explore</a>
     <a href="About.html">About Us</a>
-
     <div id="userArea"></div>
   </nav>
 </header>
@@ -208,13 +202,13 @@
   <div class="site-footer-inner">
     <div>
       <strong>Education Only Disclaimer</strong>
-      <p>StockSensei is an educational stock analysis tool. Model outputs, sample charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
+      <p>StockSensei is an educational stock analysis tool. Model outputs, charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
     </div>
-    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
+    <div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div>
   </div>
 </footer>
 <script>
-  const API_BASE = "https://stocksensei.onrender.com/";
+  const API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
   const FALLBACK = {
     AAPL: ["Apple Inc.", "$175.29", "+6.90%"],
     MSFT: ["Microsoft", "$421.44", "+1.12%"],
@@ -235,14 +229,18 @@
 
   async function loadTicker(ticker){
     if (FALLBACK[ticker]) stockData[ticker] = FALLBACK[ticker];
-    try {
-      const response = await fetch(`${API_BASE}/live/${ticker}`);
-      if (!response.ok) throw new Error("live failed");
-      const data = await response.json();
-      const change = data.daily_return_percent == null ? "--" : `${data.daily_return_percent >= 0 ? "+" : ""}${data.daily_return_percent.toFixed(2)}%`;
-      stockData[ticker] = [data.company_name || "Company unavailable", `$${Number(data.current_price).toFixed(2)}`, change];
-    } catch (error) {
-      stockData[ticker] = stockData[ticker] || ["Custom ticker", "$--", "--"];
+    for (const base of API_BASES) {
+      try {
+        const response = await fetch(`${base}/live/${ticker}`);
+        if (!response.ok) throw new Error("live failed");
+        const data = await response.json();
+        const change = data.daily_return_percent == null ? "--" : `${data.daily_return_percent >= 0 ? "+" : ""}${data.daily_return_percent.toFixed(2)}%`;
+        stockData[ticker] = [data.company_name || "Company unavailable", `$${Number(data.current_price).toFixed(2)}`, change];
+        renderWatchlist();
+        return;
+      } catch (error) {
+        stockData[ticker] = stockData[ticker] || ["Custom ticker", "$--", "--"];
+      }
     }
     renderWatchlist();
   }
@@ -305,5 +303,9 @@
   renderWatchlist();
   watchlist.forEach(loadTicker);
 </script>
+
+<script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
+<script src="session.js"></script>
 </body>
 </html>

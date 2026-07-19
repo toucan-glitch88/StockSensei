@@ -5,137 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StockSensei - Explore</title>
 <style>
-
-  :root{
-    --bg:#eef1fb;
-    --panel:#ffffff;
-    --ink:#14171f;
-    --muted:#5c6270;
-    --soft:#f7f8fb;
-    --line:#e2e6f2;
-    --blue:#2f7df2;
-    --navy:#1b2340;
-    --green:#1e9e4b;
-    --red:#d93636;
-    --gold:#b8860b;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  }
-
-  *{box-sizing:border-box;}
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-  }
-
-  main{
-    width:min(1180px, calc(100% - 40px));
-    margin:0 auto;
-    padding:38px 0 20px;
-  }
-
-  h1,h2,h3,p{margin-top:0;}
-
-  .page-kicker{
-    color:var(--blue);
-    font-weight:800;
-    font-size:13px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    margin-bottom:10px;
-  }
-
-  .page-title{
-    color:var(--navy);
-    font-size:clamp(38px, 5vw, 64px);
-    line-height:1;
-    margin-bottom:14px;
-  }
-
-  .page-subtitle{
-    color:var(--muted);
-    font-size:18px;
-    line-height:1.5;
-    max-width:760px;
-    margin-bottom:28px;
-  }
-
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:18px;
-    box-shadow:0 10px 28px rgba(20,23,31,.06);
-  }
-
-  .button{
-    border:0;
-    background:var(--navy);
-    color:#fff;
-    border-radius:10px;
-    padding:12px 16px;
-    font-weight:800;
-    cursor:pointer;
-  }
-
-  .button.secondary{
-    background:#edf2fb;
-    color:var(--navy);
-    border:1px solid var(--line);
-  }
-
-  input,select{
-    width:100%;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:12px 14px;
-    font:inherit;
-    color:var(--ink);
-    background:#fff;
-    outline:none;
-  }
-
-  input:focus,select:focus{
-    border-color:var(--blue);
-    box-shadow:0 0 0 3px rgba(47,125,242,.14);
-  }
-
-  @media (max-width:760px){
-    main{width:min(100% - 32px, 720px); padding-top:26px;}
-  }
-
-  .explore-tools{display:grid; grid-template-columns:1fr 220px; gap:14px; margin-bottom:22px;}
-  .market-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-bottom:24px;}
-  .market-card{padding:20px;}
-  .market-card h2{font-size:15px; color:var(--muted); margin-bottom:8px;}
-  .market-card .value{font-size:30px; font-weight:900; color:var(--navy);}
-  .market-card .move{font-weight:800; color:var(--green); margin-top:4px;}
-  .stock-table{padding:8px; overflow:hidden;}
-  table{width:100%; border-collapse:collapse;}
-  th,td{padding:15px 14px; text-align:left; border-bottom:1px solid var(--line);}
-  th{color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.04em;}
-  tr:last-child td{border-bottom:0;}
-  td strong{color:var(--navy);}
-  .badge{display:inline-flex; border-radius:999px; padding:6px 10px; background:#edf2fb; color:var(--navy); font-size:12px; font-weight:800;}
-  .positive{color:var(--green); font-weight:900;}
-  .negative{color:var(--red); font-weight:900;}
-  .predict-link{color:var(--blue); font-weight:900; text-decoration:none;}
-  @media (max-width:900px){.market-grid,.explore-tools{grid-template-columns:1fr;} table,thead,tbody,tr,th,td{display:block;} thead{display:none;} tr{border-bottom:1px solid var(--line); padding:10px 0;} td{border:0; padding:7px 10px;} td::before{content:attr(data-label); display:block; color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:2px;}}
-
+  :root{--navy:#1b2340;--blue:#2f6fed;--bg:#eef1fb;--card:#ffffff;--text:#1b2333;--muted:#667085;--border:#dfe5f2;--green:#129452;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text)}
+  main{max-width:1180px;margin:0 auto;padding:44px 24px 34px}
+  .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
+  .eyebrow{margin:0 0 8px;color:var(--blue);font-weight:900;letter-spacing:.04em;text-transform:uppercase;font-size:13px}
+  h1{margin:0;color:var(--navy);font-size:44px;line-height:1.08}
+  .lead{margin:12px 0 0;color:var(--muted);font-size:18px;line-height:1.55;max-width:720px}
+  .search-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 16px 36px rgba(27,35,64,.08);min-width:340px}
+  .search-row{display:flex;gap:10px}
+  .search-row input{flex:1;border:1px solid var(--border);border-radius:14px;padding:14px 15px;font-size:16px;min-width:0;outline:none}
+  .search-row input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,111,237,.12)}
+  .search-row button{border:0;border-radius:14px;background:var(--navy);color:white;font-size:16px;font-weight:900;padding:0 18px;cursor:pointer}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .theme-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 12px 28px rgba(27,35,64,.06)}
+  .theme-card h2{margin:0 0 8px;color:var(--navy);font-size:22px}
+  .theme-card p{margin:0 0 18px;color:var(--muted);line-height:1.45}
+  .ticker-row{display:flex;flex-wrap:wrap;gap:10px}
+  .ticker-chip{border:1px solid var(--border);background:#f7f9ff;color:var(--navy);border-radius:999px;padding:9px 12px;font-weight:900;cursor:pointer}
+  .ticker-chip:hover{background:#eaf1ff;border-color:#bdd0ff}
+  .market-note{margin-top:24px;background:#eaf1ff;border:1px solid #cddcff;border-radius:18px;padding:18px;color:#344054;line-height:1.5}
+  .market-note strong{color:var(--navy)}
+  @media(max-width:900px){.page-head{display:block}.search-panel{min-width:0;margin-top:22px}.grid{grid-template-columns:1fr 1fr}h1{font-size:36px}}
+  @media(max-width:620px){main{padding:28px 16px}.grid{grid-template-columns:1fr}.search-row{display:block}.search-row button{width:100%;height:48px;margin-top:10px}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-</head>
-
+<link rel="stylesheet" href="ai-assistant.css">
+<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="session.js"></script>
-
+</head>
 <body>
 <header class="site-header">
-  <a class="site-brand" href="index.html" aria-label="StockSensei home">
-    <span class="site-brand-mark" aria-hidden="true">
+  <a class="site-brand" href="index.html" aria-label="StockSensei home"><span class="site-brand-mark" aria-hidden="true">
       <svg class="stocksensei-logo-svg" viewBox="0 0 64 64" role="img">
         <g class="logo-candles">
           <path d="M9 19v28" />
@@ -157,96 +59,102 @@
         </g>
         <path class="logo-sparkline" d="M7 45 L17 45 L24 35 L31 39 L39 25 L47 30 L57 16" />
       </svg>
-    </span>
-    <span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span>
-  </a>
-
+    </span><span class="site-brand-text"><span>STOCK</span><span class="sensei">SENSEI</span></span></a>
   <nav class="site-nav" aria-label="Main navigation">
     <a href="index.html">Home</a>
-      <a href="Predict.html">Predict</a>
-      <a href="learn.html">Learn</a>
-      <a href="watchlist.html">Watchlist</a>
-      <a href="explore.html" class="active">Explore</a>
-      <a href="About.html">About Us</a>
-
-      <div id="userArea"></div>
+    <a href="Predict.html">Predict</a>
+    <a href="learn.html">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html" class="active">Explore</a>
+    <a href="About.html">About Us</a>
+    <div id="userArea"></div>
   </nav>
 </header>
+
 <main>
-  <div class="page-kicker">Market discovery</div>
-  <h1 class="page-title">Explore stocks by trend and sector.</h1>
-  <p class="page-subtitle">Search companies, filter by sector, and jump straight into a prediction when a ticker catches your eye.</p>
-
-  <section class="market-grid">
-    <article class="panel market-card"><h2>S&P 500 Sample</h2><div class="value">5,487</div><div class="move">+0.64%</div></article>
-    <article class="panel market-card"><h2>Top Sample Sector</h2><div class="value">Tech</div><div class="move">Momentum up</div></article>
-    <article class="panel market-card"><h2>Watchlist Ideas</h2><div class="value">10</div><div class="move">Starter tickers</div></article>
+  <section class="page-head">
+    <div>
+      <p class="eyebrow">Explore</p>
+      <h1>Find stock ideas by company, ticker, or theme.</h1>
+      <p class="lead">Use this page to jump into real company predictions faster. Pick a popular ticker below, or search a company name and StockSensei will open the prediction page for it.</p>
+    </div>
+    <div class="search-panel">
+      <div class="search-row">
+        <input id="exploreSearch" type="text" placeholder="Search Apple, Tesla, NVDA...">
+        <button type="button" onclick="openPrediction()">Search</button>
+      </div>
+    </div>
   </section>
 
-  <section class="explore-tools">
-    <input id="search" placeholder="Search ticker or company" oninput="renderStocks()">
-    <select id="sector" onchange="renderStocks()">
-      <option value="All">All sectors</option>
-      <option value="Technology">Technology</option>
-      <option value="Consumer">Consumer</option>
-      <option value="Finance">Finance</option>
-      <option value="Energy">Energy</option>
-      <option value="Semiconductor">Semiconductor</option>
-    </select>
+  <section class="grid" aria-label="Stock themes">
+    <article class="theme-card">
+      <h2>Technology</h2>
+      <p>Large software, devices, cloud, and platform companies.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('AAPL')">AAPL</button><button class="ticker-chip" onclick="openPrediction('MSFT')">MSFT</button><button class="ticker-chip" onclick="openPrediction('GOOGL')">GOOGL</button></div>
+    </article>
+    <article class="theme-card">
+      <h2>AI and Chips</h2>
+      <p>Semiconductors and hardware companies connected to AI demand.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('NVDA')">NVDA</button><button class="ticker-chip" onclick="openPrediction('AMD')">AMD</button><button class="ticker-chip" onclick="openPrediction('INTC')">INTC</button></div>
+    </article>
+    <article class="theme-card">
+      <h2>Electric Vehicles</h2>
+      <p>Automakers and EV-focused companies with high market attention.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('TSLA')">TSLA</button><button class="ticker-chip" onclick="openPrediction('RIVN')">RIVN</button><button class="ticker-chip" onclick="openPrediction('F')">F</button></div>
+    </article>
+    <article class="theme-card">
+      <h2>Finance</h2>
+      <p>Banks, payment networks, and financial services leaders.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('JPM')">JPM</button><button class="ticker-chip" onclick="openPrediction('V')">V</button><button class="ticker-chip" onclick="openPrediction('MA')">MA</button></div>
+    </article>
+    <article class="theme-card">
+      <h2>Consumer</h2>
+      <p>Companies shaped by shopping, subscriptions, and daily spending.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('AMZN')">AMZN</button><button class="ticker-chip" onclick="openPrediction('COST')">COST</button><button class="ticker-chip" onclick="openPrediction('SBUX')">SBUX</button></div>
+    </article>
+    <article class="theme-card">
+      <h2>Entertainment</h2>
+      <p>Streaming, media, and gaming companies with changing growth stories.</p>
+      <div class="ticker-row"><button class="ticker-chip" onclick="openPrediction('NFLX')">NFLX</button><button class="ticker-chip" onclick="openPrediction('DIS')">DIS</button><button class="ticker-chip" onclick="openPrediction('SONY')">SONY</button></div>
+    </article>
   </section>
 
-  <section class="panel stock-table">
-    <table>
-      <thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Sample Price</th><th>Move</th><th>Action</th></tr></thead>
-      <tbody id="stock-rows"></tbody>
-    </table>
+  <section class="market-note">
+    <strong>Reminder:</strong> these are starting points for research, not buy or sell recommendations. Open a prediction to see actual yfinance data, forecast ranges, and risk notes.
   </section>
 </main>
-<footer class="site-footer">
-  <div class="site-footer-inner">
-    <div>
-      <strong>Education Only Disclaimer</strong>
-      <p>StockSensei is an educational stock analysis tool. Model outputs, sample charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
-    </div>
-    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
-  </div>
-</footer>
+
+<footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div></div></footer>
+
 <script>
-  const stocks = [
-    ["AAPL", "Apple Inc.", "Technology", "$175.29", "+6.90%"],
-    ["MSFT", "Microsoft", "Technology", "$421.44", "+1.12%"],
-    ["NVDA", "NVIDIA", "Semiconductor", "$128.72", "+3.84%"],
-    ["AMD", "Advanced Micro Devices", "Semiconductor", "$162.33", "+2.05%"],
-    ["MU", "Micron Technology", "Semiconductor", "$131.18", "+1.37%"],
-    ["TSLA", "Tesla", "Consumer", "$248.91", "-2.18%"],
-    ["AMZN", "Amazon", "Consumer", "$199.32", "+1.48%"],
-    ["JPM", "JPMorgan Chase", "Finance", "$207.19", "+0.41%"],
-    ["XOM", "Exxon Mobil", "Energy", "$113.58", "-0.36%"],
-    ["META", "Meta Platforms", "Technology", "$504.71", "-0.62%"]
-  ];
+const API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5001", "http://localhost:5001", "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
 
-  function renderStocks(){
-    const q = document.getElementById("search").value.trim().toUpperCase();
-    const sector = document.getElementById("sector").value;
-    const rows = stocks.filter(stock => {
-      const matchesSearch = !q || stock[0].includes(q) || stock[1].toUpperCase().includes(q);
-      const matchesSector = sector === "All" || stock[2] === sector;
-      return matchesSearch && matchesSector;
-    });
-
-    document.getElementById("stock-rows").innerHTML = rows.map(stock => {
-      const down = stock[4].startsWith("-");
-      return `<tr>
-        <td data-label="Ticker"><strong>${stock[0]}</strong></td>
-        <td data-label="Company">${stock[1]}</td>
-        <td data-label="Sector"><span class="badge">${stock[2]}</span></td>
-        <td data-label="Sample Price">${stock[3]}</td>
-        <td data-label="Move" class="${down ? "negative" : "positive"}">${stock[4]}</td>
-        <td data-label="Action"><a class="predict-link" href="Predict.html?ticker=${stock[0]}">Predict</a></td>
-      </tr>`;
-    }).join("");
+async function resolveTicker(query) {
+  const value = (query || "").trim();
+  if (!value) return "";
+  for (const base of API_BASES) {
+    try {
+      const response = await fetch(base + "/resolve/" + encodeURIComponent(value));
+      const data = await response.json();
+      if (response.ok && data.symbol) return data.symbol;
+    } catch (error) {}
   }
-  renderStocks();
+  return value.toUpperCase();
+}
+
+async function openPrediction(value) {
+  const input = document.getElementById("exploreSearch");
+  const symbol = await resolveTicker(value || input.value);
+  if (!symbol) return;
+  window.location.href = "Predict.html?ticker=" + encodeURIComponent(symbol);
+}
+
+document.getElementById("exploreSearch").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") openPrediction();
+});
 </script>
+<script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
+<script src="session.js"></script>
 </body>
 </html>

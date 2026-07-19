@@ -51,15 +51,10 @@
   @media(max-width:900px){.learn-layout{grid-template-columns:1fr;} .learn-nav{position:static;} .metric-grid,.workflow{grid-template-columns:1fr;}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-</head>
-
+<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="session.js"></script>
-
+</head>
 <body>
 <header class="site-header">
   <a class="site-brand" href="index.html" aria-label="StockSensei home">
@@ -91,13 +86,12 @@
 
   <nav class="site-nav" aria-label="Main navigation">
     <a href="index.html">Home</a>
-      <a href="Predict.html">Predict</a>
-      <a href="learn.html" class="active">Learn</a>
-      <a href="watchlist.html">Watchlist</a>
-      <a href="explore.html">Explore</a>
-      <a href="About.html">About Us</a>
-
-      <div id="userArea"></div>
+    <a href="Predict.html">Predict</a>
+    <a href="learn.html" class="active">Learn</a>
+    <a href="watchlist.html">Watchlist</a>
+    <a href="explore.html">Explore</a>
+    <a href="About.html">About Us</a>
+    <div id="userArea"></div>
   </nav>
 </header>
 <main>
@@ -159,7 +153,6 @@
         </div>
       </section>
 
-
       <section class="panel module" id="ask">
         <h2>Ask StockSensei</h2>
         <p>Ask a beginner-friendly question about metrics, model output, confidence, risk, or how to read the app. The assistant is limited to educational answers and will not give buy/sell advice.</p>
@@ -192,7 +185,7 @@
       <strong>Education Only Disclaimer</strong>
       <p>StockSensei is an educational stock analysis tool. Model outputs, charts, and market data shown here are not financial advice and are not recommendations to buy or sell securities.</p>
     </div>
-    <div class="site-footer-copy">© 2026 StockSensei. All rights reserved.</div>
+    <div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div>
   </div>
 </footer>
 <script>
@@ -255,5 +248,9 @@
       : "Not quite. Low confidence plus high volatility means the output is uncertain and risky.";
   }
 </script>
+
+<script src="supabase.js"></script>
+<script src="ai-assistant.js"></script>
+<script src="session.js"></script>
 </body>
 </html>

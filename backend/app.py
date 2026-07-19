@@ -31,14 +31,14 @@ except Exception:
     ARIMA = None
 
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
 app = Flask(__name__)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN")
 if FRONTEND_ORIGIN:
-    CORS(app, origins=[origin.strip() for origin in FRONTEND_ORIGIN.split(",")])
+    CORS(app, origins=[origin.strip() for origin in FRONTEND_ORIGIN.split(",") if origin.strip()])
 else:
     CORS(app)
-
-load_dotenv(Path(__file__).resolve().parent / ".env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = (
@@ -67,12 +67,56 @@ MODEL_PATH = BASE_DIR / "models" / "stock_direction_model.pkl"
 FEATURES_PATH = BASE_DIR / "models" / "features.pkl"
 
 
+SYMBOL_ALIASES = {
+    "APPLE": "AAPL",
+    "APPLE INC": "AAPL",
+    "APPLE INC.": "AAPL",
+    "MICROSOFT": "MSFT",
+    "MICROSOFT CORPORATION": "MSFT",
+    "NVIDIA": "NVDA",
+    "NVIDIA CORPORATION": "NVDA",
+    "TESLA": "TSLA",
+    "TESLA INC": "TSLA",
+    "TESLA INC.": "TSLA",
+    "GOOGLE": "GOOGL",
+    "ALPHABET": "GOOGL",
+    "ALPHABET INC": "GOOGL",
+    "AMAZON": "AMZN",
+    "AMAZON.COM": "AMZN",
+    "META": "META",
+    "META PLATFORMS": "META",
+    "FACEBOOK": "META",
+    "JPMORGAN": "JPM",
+    "JPMORGAN CHASE": "JPM",
+    "ADVANCED MICRO DEVICES": "AMD",
+    "MICRON": "MU",
+    "MICRON TECHNOLOGY": "MU",
+    "SPOTIFY": "SPOT",
+    "NETFLIX": "NFLX",
+    "DISNEY": "DIS",
+    "WALMART": "WMT",
+    "COSTCO": "COST",
+}
+
 def resolve_symbol(query):
     clean = str(query or "").strip()
+
     if "(" in clean and ")" in clean:
         inside = clean.split("(")[-1].split(")")[0]
         if inside:
             clean = inside
+
+    normalized = " ".join(clean.upper().replace(",", " ").split())
+    normalized = normalized.replace(" INCORPORATED", " INC")
+    normalized = normalized.replace(" CORPORATION", " CORP")
+
+    if normalized in SYMBOL_ALIASES:
+        return SYMBOL_ALIASES[normalized]
+
+    without_periods = normalized.replace(".", "")
+    if without_periods in SYMBOL_ALIASES:
+        return SYMBOL_ALIASES[without_periods]
+
     return "".join(ch for ch in clean.upper() if ch.isalpha() or ch == "." or ch == "-")
 
 
@@ -465,7 +509,8 @@ def home():
             "/live/<ticker>",
             "/history/<ticker>",
             "/predict/<ticker>",
-            "/forecast/<ticker>?days=10"
+            "/forecast/<ticker>?days=10",
+            "/ask"
         ],
         "note": "For educational use only. Not financial advice."
     })
