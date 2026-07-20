@@ -31,7 +31,6 @@
   @media(max-width:620px){main{padding:28px 16px}.grid{grid-template-columns:1fr}.search-row{display:block}.search-row button{width:100%;height:48px;margin-top:10px}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -127,14 +126,14 @@
 <footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div></div></footer>
 
 <script>
-const API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5001", "http://localhost:5001", "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
+const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000","http://127.0.0.1:5001","http://localhost:5001","https://stocksensei.onrender.com"].filter(Boolean);
 
 async function resolveTicker(query) {
   const value = (query || "").trim();
   if (!value) return "";
   for (const base of API_BASES) {
     try {
-      const response = await fetch(base + "/resolve/" + encodeURIComponent(value));
+      const response = await fetch(joinApiUrl(base, "/resolve/" + encodeURIComponent(value)));
       const data = await response.json();
       if (response.ok && data.symbol) return data.symbol;
     } catch (error) {}
@@ -154,7 +153,6 @@ document.getElementById("exploreSearch").addEventListener("keydown", (event) => 
 });
 </script>
 <script src="supabase.js"></script>
-<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

@@ -51,7 +51,6 @@
   @media(max-width:900px){.learn-layout{grid-template-columns:1fr;} .learn-nav{position:static;} .metric-grid,.workflow{grid-template-columns:1fr;}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -106,8 +105,7 @@
       <a href="#risk">Risk</a>
       <a href="#workflow">Research Workflow</a>
       <a href="#quiz">Mini Quiz</a>
-      <a href="#ask">Ask AI</a>
-    </aside>
+</aside>
 
     <div class="content-stack">
       <section class="panel module" id="metrics">
@@ -152,21 +150,7 @@
           <div class="step"><b>4</b><h3>Reflect</h3><p>Ask whether the model was confident and why.</p></div>
         </div>
       </section>
-
-      <section class="panel module" id="ask">
-        <h2>Ask StockSensei</h2>
-        <p>Ask a beginner-friendly question about metrics, model output, confidence, risk, or how to read the app. The assistant is limited to educational answers and will not give buy/sell advice.</p>
-        <div class="ask-box">
-          <textarea id="ask-question" maxlength="900" placeholder="Example: What does high volatility mean on the Predict page?"></textarea>
-          <div class="ask-actions">
-            <button id="ask-submit" type="button" onclick="askStockSensei()">Submit Question</button>
-            <span class="ask-status" id="ask-status">Backend must be running on port 5000.</span>
-          </div>
-          <div class="ask-answer" id="ask-answer"></div>
-        </div>
-      </section>
-
-      <section class="panel module" id="quiz">
+<section class="panel module" id="quiz">
         <h2>Mini check</h2>
         <p>If a stock has a low confidence prediction and high volatility, how should you treat it?</p>
         <div class="quiz-options">
@@ -189,41 +173,6 @@
   </div>
 </footer>
 <script>
-
-  const ASK_API_BASES = [window.STOCKSENSEI_API_BASE, "https://stocksensei.onrender.com/"].filter(Boolean);
-
-  async function askBackend(question){
-    let lastError = "Backend unavailable";
-    for (const base of ASK_API_BASES) {
-      try {
-        const response = await fetch(base + "/ask", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({question})
-        });
-        const data = await response.json();
-        if (response.ok) return data;
-        lastError = data.error || response.statusText;
-      } catch (error) {
-        lastError = error.message;
-      }
-    }
-    throw new Error(lastError);
-  }
-
-  async function askStockSensei(){
-    const input = document.getElementById("ask-question");
-    const button = document.getElementById("ask-submit");
-    const status = document.getElementById("ask-status");
-    const answerBox = document.getElementById("ask-answer");
-    const question = input.value.trim();
-
-    if (!question) {
-      status.textContent = "Type a question first.";
-      answerBox.classList.remove("visible");
-      return;
-    }
-
     button.disabled = true;
     status.textContent = "Thinking...";
     answerBox.classList.remove("visible");
@@ -250,7 +199,6 @@
 </script>
 
 <script src="supabase.js"></script>
-<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

@@ -130,7 +130,6 @@
 
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -208,7 +207,7 @@
   </div>
 </footer>
 <script>
-  const API_BASES = [window.STOCKSENSEI_API_BASE, "http://127.0.0.1:5000", "http://localhost:5000"].filter(Boolean);
+  const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000","http://127.0.0.1:5001","http://localhost:5001","https://stocksensei.onrender.com"].filter(Boolean);
   const FALLBACK = {
     AAPL: ["Apple Inc.", "$175.29", "+6.90%"],
     MSFT: ["Microsoft", "$421.44", "+1.12%"],
@@ -231,7 +230,7 @@
     if (FALLBACK[ticker]) stockData[ticker] = FALLBACK[ticker];
     for (const base of API_BASES) {
       try {
-        const response = await fetch(`${base}/live/${ticker}`);
+        const response = await fetch(joinApiUrl(base, `/live/${ticker}`));
         if (!response.ok) throw new Error("live failed");
         const data = await response.json();
         const change = data.daily_return_percent == null ? "--" : `${data.daily_return_percent >= 0 ? "+" : ""}${data.daily_return_percent.toFixed(2)}%`;
@@ -305,7 +304,6 @@
 </script>
 
 <script src="supabase.js"></script>
-<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

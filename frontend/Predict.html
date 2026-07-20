@@ -23,7 +23,6 @@
   @media(max-width:980px){main{grid-template-columns:1fr}.details{grid-template-columns:repeat(2,1fr)}.top-grid,.expanded-layout{grid-template-columns:1fr}}@media(max-width:560px){main{width:min(100% - 24px,1220px)}.stock-header{display:block}.expand-btn{margin-top:16px}.details,.forecast-grid{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -83,8 +82,12 @@
 <div class="expanded-overlay" id="expanded-overlay" onclick="closeExpandedView(event)"><div class="expanded-modal"><div class="expanded-header"><div><h2 id="expanded-title">Expanded View</h2><p class="company-full" id="expanded-subtitle">Search a ticker to load analysis.</p></div><button class="expanded-close" onclick="closeExpandedView()">Close</button></div><div class="expanded-layout"><div class="expanded-chart"><canvas id="expandedChart"></canvas></div><div class="expanded-stats"><div class="stat"><span>Ticker</span><strong id="expanded-ticker">--</strong></div><div class="stat"><span>Price</span><strong id="expanded-price">--</strong></div><div class="stat"><span>Prediction</span><strong id="expanded-prediction">Waiting</strong></div><div class="stat"><span>Confidence</span><strong id="expanded-confidence">--%</strong></div><div class="stat"><span>Forecast model</span><strong id="expanded-model">--</strong></div><div class="stat"><span>10-day estimate</span><strong id="expanded-future">--</strong></div><div class="stat"><span>Risk</span><strong id="expanded-risk">--</strong></div><p class="risk-text" id="expanded-risk-text">Risk explanation will appear here.</p></div></div></div></div>
 <footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div></div></footer>
 <script>
-const API_BASES=[window.STOCKSENSEI_API_BASE,"https://stocksensei.onrender.com/"].filter(Boolean);let chart;let expandedChart;let lastForecastData;let searchTimer;
-async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000","http://127.0.0.1:5001","http://localhost:5001","https://stocksensei.onrender.com"].filter(Boolean);let chart;let expandedChart;let lastForecastData;let searchTimer;
+
+function joinApiUrl(base,path){
+  return String(base).replace(/\/$/,"") + path;
+}
+async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(joinApiUrl(base,path));const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
 async function resolveTickerFromBackend(value){const q=cleanQuery(value);if(!q)return"";try{const data=await fetchJson("/resolve/"+encodeURIComponent(q));return data.ticker||q}catch(e){return q}}
 function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":"$"+Number(v).toFixed(2)}function percent(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":Number(v).toFixed(2)+"%"}function signedPercent(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":(Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}function num(v){return v===null||v===undefined||Number.isNaN(Number(v))?"--":Number(v).toLocaleString()}function labelDate(v){const d=new Date(v+"T00:00:00");return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}function cleanQuery(v){const m=v.match(/\(([A-Z.\-]{1,8})\)/);return m?m[1]:v.trim()}function setStatus(m){document.getElementById("status-message").innerHTML=m}
 function showResults(results){const box=document.getElementById("search-results");if(!results.length){box.style.display="none";return}box.innerHTML=results.map(r=>`<button class="search-result" onclick="chooseResult('${r.symbol.replace(/'/g,"")}')"><strong>${r.symbol}</strong><span>${r.name||""}</span></button>`).join("");box.style.display="block"}function chooseResult(symbol){document.getElementById("stock-search").value=symbol;document.getElementById("search-results").style.display="none";selectStock(symbol)}
@@ -103,7 +106,6 @@ const initialParams=new URLSearchParams(window.location.search);const initialTic
 </script>
 
 <script src="supabase.js"></script>
-<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>

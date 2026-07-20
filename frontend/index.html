@@ -28,7 +28,6 @@
   @media(max-width:860px){main{grid-template-columns:1fr;padding:30px 18px}.hero h1{font-size:34px}.forecast-summary{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="shared-nav.css">
-<link rel="stylesheet" href="ai-assistant.css">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -91,8 +90,12 @@
 </main>
 <footer class="site-footer"><div class="site-footer-inner"><div><strong>Education Only Disclaimer</strong><p>StockSensei is an educational stock analysis tool. Forecasts, model outputs, charts, and market data shown here are not financial advice or recommendations to buy or sell securities.</p></div><div class="site-footer-copy">&copy; 2026 StockSensei. All rights reserved.</div></div></footer>
 <script>
-const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000"].filter(Boolean);let chart;let selectedTicker="AAPL";let searchTimer;
-async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(base+path);const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
+const API_BASES=[window.STOCKSENSEI_API_BASE,"http://127.0.0.1:5000","http://localhost:5000","http://127.0.0.1:5001","http://localhost:5001","https://stocksensei.onrender.com"].filter(Boolean);let chart;let selectedTicker="AAPL";let searchTimer;
+
+function joinApiUrl(base,path){
+  return String(base).replace(/\/$/,"") + path;
+}
+async function fetchJson(path){let lastError;for(const base of API_BASES){try{const r=await fetch(joinApiUrl(base,path));const d=await r.json();if(r.ok)return d;lastError=d.error||r.statusText}catch(e){lastError=e.message}}throw new Error(lastError||"Backend unavailable")}
 async function resolveTickerFromBackend(value){const q=cleanQuery(value);if(!q)return"";try{const data=await fetchJson("/resolve/"+encodeURIComponent(q));return data.ticker||q}catch(e){return q}}
 function money(v){return v===null||v===undefined||Number.isNaN(Number(v))?"$--":"$"+Number(v).toFixed(2)}
 function pct(v){if(v===null||v===undefined||Number.isNaN(Number(v)))return"--";return (Number(v)>=0?"+":"")+Number(v).toFixed(2)+"%"}
@@ -111,7 +114,6 @@ window.addEventListener("load",()=>loadForecast("AAPL"));
 </script>
 
 <script src="supabase.js"></script>
-<script src="ai-assistant.js"></script>
 <script src="session.js"></script>
 </body>
 </html>
